@@ -5,4 +5,4 @@ Jimuskin - james_boyd@jimusk.in
 
 ---
 
-![Frontend Design](Assets/design.png)
+![Frontend Design](Design/Assets/design.png)
