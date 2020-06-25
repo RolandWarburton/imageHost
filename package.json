@@ -7,7 +7,7 @@
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"setup": "node Setup.js",
 		"monitor": "nodemon server.js",
-		"clean": "rm -rf ./uploads/*"
+		"clean": "rm -f ./uploads/* && rm -f ./access.log"
 	},
 	"repository": {
 		"type": "git",
