@@ -1,6 +1,6 @@
 {
 	"name": "image-host",
-	"version": "1.0.0",
+	"version": "0.0.1",
 	"description": "Self serve image host",
 	"main": "index.js",
 	"scripts": {
@@ -23,7 +23,8 @@
 		"dotenv": "^8.2.0",
 		"express": "^4.17.1",
 		"formidable": "^1.2.2",
-		"mongoose": "^5.9.20"
+		"mongoose": "^5.9.20",
+		"morgan": "^1.10.0"
 	},
 	"devDependencies": {
 		"jest": "^26.1.0",

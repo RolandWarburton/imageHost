@@ -10,7 +10,11 @@ const Image = mongoose.Schema(
 			type: Array,
 			require: true,
 		},
-		img: {
+		path: {
+			type: String,
+			require: true,
+		},
+		_id: {
 			type: String,
 			require: true,
 		},
@@ -19,3 +23,11 @@ const Image = mongoose.Schema(
 );
 
 module.exports = mongoose.model("Image", Image);
+
+// * Example data to insert
+// {
+// 	"forceTags": true,
+// 	"tags": ["a", "b", "c"],
+// 	"img": "a.png",
+// 	"id": "123"
+// }
