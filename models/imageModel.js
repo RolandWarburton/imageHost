@@ -14,6 +14,32 @@ const Image = mongoose.Schema(
 			type: String,
 			require: true,
 		},
+		meta: {
+			require: false,
+			uploadDate: {
+				type: Number,
+				require: false,
+			},
+			uploadMonth: {
+				type: Number,
+				require: false,
+			},
+			uploadYear: {
+				type: Number,
+				require: false,
+			},
+			dimensions: {
+				require: false,
+				width: {
+					type: Number,
+					require: false,
+				},
+				height: {
+					type: Number,
+					require: false,
+				},
+			},
+		},
 		_id: {
 			type: String,
 			require: true,
