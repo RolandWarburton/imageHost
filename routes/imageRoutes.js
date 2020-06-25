@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const ImageController = require("../controllers/images");
+// const ImageController = require("../controllers/images");
+
+const getImageMeta = require("../controllers/getImageMeta");
+const getImageById = require("../controllers/getImageById");
+const getImages = require("../controllers/getImages");
+const postImage = require("../controllers/postImage");
 
 // * Add help text to the router which can be printed on the "/" route
 /**
@@ -12,13 +17,13 @@ const addHelpDescription = (index, helpString) => {
 	router.stack[index].helpDescription = helpString;
 };
 
-router.get("/image/meta/:id", ImageController.getImageMeta);
+router.get("/image/meta/:id", getImageMeta);
 
-router.get("/image/:id", ImageController.getImageById);
+router.get("/image/:id", getImageById);
 
-router.get("/images", ImageController.getImages);
+router.get("/images", getImages);
 
-router.post("/image", ImageController.postImage);
+router.post("/image", postImage);
 
 // Help for GET /image/meta/:id
 addHelpDescription(0, "Returns the json data for a single image id");
