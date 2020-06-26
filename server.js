@@ -4,7 +4,15 @@ const imageRoutes = require("./routes/imageRoutes");
 const version = require("./package").version;
 const path = require("path");
 const fs = require("fs");
+const { exec } = require("child_process");
+const internalIp = require('internal-ip');
 const morgan = require("morgan");
+
+// get the internal IP
+const ipv4 = (async () => {
+	console.log(`Running on ${await internalIp.v4()}`);
+})();
+
 
 const endpoints = [];
 
