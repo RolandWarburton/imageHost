@@ -39,3 +39,7 @@ DB_CONNECTION=mongodb://mongo:27017/[apps container name]
 ## Installation
 
 1. Database must be called "imageHost"
+
+## References
+
+Getting a user and database created on the docker container [here](https://medium.com/faun/managing-mongodb-on-docker-with-docker-compose-26bf8a0bbae3).
