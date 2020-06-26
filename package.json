@@ -6,7 +6,8 @@
 	"scripts": {
 		"start": "node server.js",
 		"docker:build": "sudo docker-compose build && sudo docker-compose up ",
-		"docker:reset": "sudo docker-compose rm && sudo docker-compose build && sudo docker-compose up",
+		"docker:start": "sudo docker-compose up",
+		"docker:reset": "sudo docker-compose rm && sudo docker-compose build",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"setup": "node Setup.js",
 		"monitor": "nodemon server.js",
