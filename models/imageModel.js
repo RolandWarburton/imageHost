@@ -45,7 +45,7 @@ const Image = mongoose.Schema(
 			require: true,
 		},
 	},
-	{ collection: "imageHost" }
+	{ collection: "imageHost", autoCreate: true }
 );
 
 module.exports = mongoose.model("Image", Image);

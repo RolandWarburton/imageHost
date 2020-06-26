@@ -4,6 +4,9 @@
 	"description": "Self serve image host",
 	"main": "index.js",
 	"scripts": {
+		"start": "node server.js",
+		"docker:build": "sudo docker-compose build && sudo docker-compose up ",
+		"docker:reset": "sudo docker-compose rm && sudo docker-compose build && sudo docker-compose up",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"setup": "node Setup.js",
 		"monitor": "nodemon server.js",
@@ -25,6 +28,7 @@
 		"express": "^4.17.1",
 		"formidable": "^1.2.2",
 		"image-size": "^0.8.3",
+		"internal-ip": "^6.0.0",
 		"mongoose": "^5.9.20",
 		"morgan": "^1.10.0"
 	},
