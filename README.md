@@ -30,10 +30,16 @@ mongodb://username:password@127.0.0.1:27017/databaseName?authSource=authenticati
 
 ### Running in a docker container
 
-replace DB_CONNECTION with
+```none
+DB_CONNECTION=mongodb://roland:rhinos@127.0.0.1:27017/imageHost?authSource=imageHost
+```
+
+### Running locally
+
+You may need to change the authentication database to **?authSource=admin** if your authentication database is not Imagehost, or better yet use the script inside *init-mongo.js* to create your user in the same way that it would be created on the docker container.
 
 ```none
-DB_CONNECTION=mongodb://mongo:27017/[apps container name]
+DB_CONNECTION=mongodb://roland:rhinos@mongo:27017/imageHost?authSource=imageHost
 ```
 
 ## Installation
