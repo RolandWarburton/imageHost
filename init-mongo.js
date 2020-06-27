@@ -1,14 +1,15 @@
-console.log("==============================================================================================================================")
+print("============================================================================")
+print("==================== RUNNING MONGO INIT-MONGO.JS SCRIPT ====================")
+print("============================================================================")
 
-db.createUser(
-	{
-		user: "imageHostUser",
+databases = ["imageHost"]
+
+for (var i = databases.length - 1; i >= 0; i--) {
+	db = db.getSiblingDB(databases[i])
+
+	db.createUser({
+		user: "roland",
 		pwd: "rhinos",
-		roles: [
-			{
-				role: "readWrite",
-				db: "imageHost"
-			}
-		]
-	}
-)
+		roles: ["readWrite"]
+	})
+}

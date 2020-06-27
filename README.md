@@ -30,8 +30,10 @@ mongodb://username:password@127.0.0.1:27017/databaseName?authSource=authenticati
 
 ### Running in a docker container
 
+Change the @127... to @mongo which is the name of the mongo database container.
+
 ```none
-DB_CONNECTION=mongodb://roland:rhinos@127.0.0.1:27017/imageHost?authSource=imageHost
+DB_CONNECTION=mongodb://roland:rhinos@mongo:27017/imageHost?authSource=imageHost
 ```
 
 ### Running locally
