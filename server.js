@@ -5,14 +5,27 @@ const version = require("./package").version;
 const path = require("path");
 const fs = require("fs");
 const { exec } = require("child_process");
-const internalIp = require('internal-ip');
+const internalIp = require("internal-ip");
 const morgan = require("morgan");
+
+const createDir = (path) => {
+	if (!fs.existsSync(path))
+		fs.mkdir(path, (err) => {
+			if (err) {
+				console.error(err);
+				return;
+			} else {
+				console.log(`Build directory: ${path}`);
+			}
+		});
+};
+
+createDir("./uploads");
 
 // get the internal IP
 const ipv4 = (async () => {
 	console.log(`Running on ${await internalIp.v4()}`);
 })();
-
 
 const endpoints = [];
 
