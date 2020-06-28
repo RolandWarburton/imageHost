@@ -7,8 +7,10 @@ const fs = require("fs");
 const { exec } = require("child_process");
 const internalIp = require("internal-ip");
 const morgan = require("morgan");
+const debug = require("debug")("imageHost:http"); // DEBUG=http npm run monitor
 
 const createDir = (path) => {
+	debug(`Creating directory ${path}`);
 	if (!fs.existsSync(path))
 		fs.mkdir(path, (err) => {
 			if (err) {

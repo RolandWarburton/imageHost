@@ -8,6 +8,7 @@
 		"docker:build": "sudo docker-compose build && sudo docker-compose up ",
 		"docker:start": "sudo docker-compose up",
 		"docker:reset": "sudo docker-compose rm && sudo docker-compose build",
+		"debug": "DEBUG=imageHost:* npm run monitor",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"setup": "node Setup.js",
 		"monitor": "nodemon server.js",
@@ -31,9 +32,11 @@
 		"image-size": "^0.8.3",
 		"internal-ip": "^6.0.0",
 		"mongoose": "^5.9.20",
-		"morgan": "^1.10.0"
+		"morgan": "^1.10.0",
+		"ora": "^4.0.4"
 	},
 	"devDependencies": {
+		"debug": "^4.1.1",
 		"jest": "^26.1.0",
 		"nodemon": "^2.0.4"
 	}

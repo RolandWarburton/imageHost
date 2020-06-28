@@ -4,9 +4,11 @@ const Formidable = require("formidable");
 const { v5: uuidv5 } = require("uuid");
 const mime = require("mime-types");
 const sizeOf = require("image-size");
+const debug = require("debug")("imageHost:controllers");
 require("dotenv").config();
 
 const postImage = async (req, res) => {
+	debug("Running postImage...");
 	// create a new form
 	const form = new Formidable({
 		multiples: false,

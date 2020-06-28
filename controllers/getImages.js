@@ -1,9 +1,12 @@
 const Image = require("../models/imageModel");
 const mongoose = require("mongoose");
+const debug = require("debug")("imageHost:controllers");
 require("dotenv").config();
 
 // * get all images
 const getImages = (req, res) => {
+	debug("Running getImages...");
+
 	const numberOfItemsPerPage = 10;
 	const queries = req.query;
 
