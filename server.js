@@ -21,6 +21,7 @@ const createDir = (path) => {
 };
 
 createDir("./uploads");
+createDir("./logs");
 
 // get the internal IP
 const ipv4 = (async () => {
@@ -41,8 +42,8 @@ const port = 2020;
 
 // create a write stream (in append mode) for morgan
 const accessLogStream = fs.createWriteStream(
-	path.join(__dirname, "access.log"),
-	{ flags: "a" }
+	path.join(__dirname, "logs", "access.log"),
+	{ flag: "a" }
 );
 
 // * database

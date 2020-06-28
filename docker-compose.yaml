@@ -8,6 +8,9 @@ services:
       - '80:2020'
     links:
       - mongo
+    volumes:
+      # map /tmp/logs in the container to logs on host
+      - ./logs:/usr/src/app/logs
   mongo:
     container_name: mongo
     image: mongo
@@ -16,7 +19,9 @@ services:
         - MONGO_INITDB_ROOT_USERNAME=admin
         - MONGO_INITDB_ROOT_PASSWORD=rhinos
     volumes:
+        # For the startup script that mongo runs to create a new user
         - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+        # Store the mongo database on the host to make it persistent between container restarts
         - ./mongo-volume:/data/db
     ports:
         - '27017:27017'
