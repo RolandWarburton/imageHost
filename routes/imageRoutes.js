@@ -6,6 +6,7 @@ const getImageMeta = require("../controllers/getImageMeta");
 const getImageById = require("../controllers/getImageById");
 const getImages = require("../controllers/getImages");
 const postImage = require("../controllers/postImage");
+const deleteImageById = require("../controllers/deleteImageById");
 
 // * Add help text to the router which can be printed on the "/" route
 /**
@@ -24,6 +25,8 @@ router.get("/image/:id", getImageById);
 router.get("/images", getImages);
 
 router.post("/image", postImage);
+
+router.delete("/image/:id", deleteImageById);
 
 // Help for GET /image/meta/:id
 addHelpDescription(0, "Returns the json data for a single image id");
