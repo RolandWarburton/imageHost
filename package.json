@@ -31,6 +31,7 @@
 		"formidable": "^1.2.2",
 		"image-size": "^0.8.3",
 		"internal-ip": "^6.0.0",
+		"jsonwebtoken": "^8.5.1",
 		"mongoose": "^5.9.20",
 		"morgan": "^1.10.0",
 		"ora": "^4.0.4"
