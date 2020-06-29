@@ -5,9 +5,6 @@ const { v5: uuidv5 } = require("uuid");
 const mime = require("mime-types");
 const sizeOf = require("image-size");
 const debug = require("debug")("imageHost:controllers");
-const { UV_FS_O_FILEMAP } = require("constants");
-const { response } = require("express");
-
 const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
@@ -35,34 +32,13 @@ const postImage = async (req, res) => {
 
 	// this part triggers when the fields and file are read in
 	form.parse(req, (err, fields, files) => {
+		debug("parsing form...");
 		// if there is a general error
 		if (err) {
 			next(err);
 			res.status(400).json({ success: false });
 			return;
 		}
-
-		//check for matching authentication keys
-		const authKey = fields.key;
-
-		console.log(`${authKey} : ${process.env.API_KEY}`);
-		if(!authKey) {
-			res.status(401).json({
-				success: false,
-				error: "No key provided"
-			});
-			return;
-		}
-
-		if(authKey.localeCompare(process.env.API_KEY) !== 0)
-		{
-			res.status(500).json({
-				success: false,
-				error: "Incorrect key provided"
-			});
-			return;
-		}
-		
 
 		// if there are too many files
 		if (files.length > 0) {

@@ -7,6 +7,12 @@ const getImageById = require("../controllers/getImageById");
 const getImages = require("../controllers/getImages");
 const postImage = require("../controllers/postImage");
 const deleteImageById = require("../controllers/deleteImageById");
+const authenticate = require("../middleware/authenticate");
+
+const bodyParser = require("body-parser");
+
+// create application/x-www-form-urlencoded parser
+const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 // * Add help text to the router which can be printed on the "/" route
 /**
@@ -24,7 +30,7 @@ router.get("/image/:id", getImageById);
 
 router.get("/images", getImages);
 
-router.post("/image", postImage);
+router.post("/image", [authenticate], postImage);
 
 router.delete("/image/:id", deleteImageById);
 
@@ -46,9 +52,12 @@ addHelpDescription(
 // Help for DELETE /image
 addHelpDescription(
 	3,
-	"Deletes an image and removes it from the uploads dir on the server"
+	"Posts an image to the database. requires a JWT token from the /login route"
 );
 
 //help for POST /image
-addHelpDescription(3, "Posts an image to the database");
+addHelpDescription(
+	4,
+	"Deletes an image and removes it from the uploads dir on the server"
+);
 module.exports = router;

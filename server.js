@@ -1,12 +1,14 @@
 const express = require("express");
 const db = require("./database");
 const imageRoutes = require("./routes/imageRoutes");
+const userRoutes = require("./routes/userRoutes");
 const version = require("./package").version;
 const path = require("path");
 const fs = require("fs");
 const { exec } = require("child_process");
 const internalIp = require("internal-ip");
 const morgan = require("morgan");
+const bodyParser = require("body-parser");
 const debug = require("debug")("imageHost:http"); // DEBUG=http npm run monitor
 
 const createDir = (path) => {
@@ -64,8 +66,12 @@ app.use(
 	})
 );
 
-// import API routes
+// * routes
+// import image API routes
 app.use("/", imageRoutes);
+
+// import user API routes
+app.use("/", userRoutes);
 
 // fallback
 app.get("*", (req, res) => {
