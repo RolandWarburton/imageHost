@@ -7,11 +7,25 @@ require("dotenv").config();
 const getImages = (req, res) => {
 	debug("Running getImages...");
 
-	const numberOfItemsPerPage = 10;
 	const queries = req.query;
+	debug(`Received queries ${JSON.stringify(queries)}`);
+
+	// get the limit query and convert it to a number to set the numberOfItemsPerPage
+	const limit = Number(queries.limit);
+
+	// Set the number of items per page to the ?limit=n if its between 10 and 100
+	const numberOfItemsPerPage =
+		limit && limit >= 10 && limit <= 100 ? limit : 20;
+
+	//get the page number and convert it to a number
+	const pageNumber = Number(queries.page);
 
 	// Internally controlls how many values to skip to give the illusion of pages
-	skipCount = queries.page ? numberOfItemsPerPage * queries.page : 0;
+	skipCount = pageNumber ? numberOfItemsPerPage * pageNumber : 0;
+
+	debug(
+		`Internally skipping ${skipCount} results to get to page ${pageNumber}`
+	);
 
 	Image.find(
 		{},

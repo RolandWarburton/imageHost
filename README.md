@@ -14,8 +14,7 @@ Make sure to include a `.env` file on the root of the project containing.
 ```none
 DB_CONNECTION=mongodb://username:password@127.0.0.1:27017/databaseName
 MODE=development | production
-DEVELOPMENT_UPLOAD_DIRECTORY_LOCATION=./uploads
-PRODUCTION_UPLOAD_DIRECTORY_LOCATION=/uploads
+UPLOAD_DIRECTORY_LOCATION=./uploads
 ```
 
 ### Running locally with authentication
