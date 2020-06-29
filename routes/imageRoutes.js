@@ -43,6 +43,12 @@ addHelpDescription(
 	"Returns all images limited to X amount per page. add ?page=N to get more results"
 );
 
+// Help for DELETE /image
+addHelpDescription(
+	3,
+	"Deletes an image and removes it from the uploads dir on the server"
+);
+
 //help for POST /image
 addHelpDescription(3, "Posts an image to the database");
 module.exports = router;
