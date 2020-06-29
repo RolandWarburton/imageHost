@@ -40,7 +40,7 @@ addHelpDescription(
 // Help for GET /images
 addHelpDescription(
 	2,
-	"Returns all images limited to X amount per page. add ?page=N to get more results"
+	"Returns all images limited to X amount per page | Options: ?page=0 ?limit=10 | Example example.com/images?page=0&limit=10"
 );
 
 // Help for DELETE /image
