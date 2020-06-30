@@ -8,7 +8,8 @@ const fs = require("fs");
 const { exec } = require("child_process");
 const internalIp = require("internal-ip");
 const morgan = require("morgan");
-const bodyParser = require("body-parser");
+const { logger } = require("./logger");
+const { httpLogger } = require("./logger");
 const debug = require("debug")("imageHost:http"); // DEBUG=http npm run monitor
 
 const createDir = (path) => {
@@ -44,27 +45,13 @@ for (layer of imageRoutes.stack) {
 const app = express();
 const port = 2020;
 
-// create a write stream (in append mode) for morgan
-const accessLogStream = fs.createWriteStream(
-	path.join(__dirname, "logs", "access.log"),
-	{ flag: "a" }
-);
-
 // * database
 // throw an error if database conn fails
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 // * middleware
-// write "combined" morgan logs to access.log
-app.use(morgan("combined", { stream: accessLogStream }));
-// log only 4xx and 5xx responses to console
-app.use(
-	morgan("dev", {
-		skip: function (req, res) {
-			return res.statusCode < 400;
-		},
-	})
-);
+// direct morgan http logs to winston http logger
+app.use(morgan("combined", { stream: httpLogger.stream }));
 
 // * routes
 // import image API routes
@@ -78,4 +65,7 @@ app.get("*", (req, res) => {
 	res.status(200).json({ success: true, version: version, help: endpoints });
 });
 
-app.listen(port, () => console.log(`Server running on ${port}`));
+app.listen(port, () => {
+	console.log(`Server running on ${port}`);
+	logger.info("Server started");
+});
