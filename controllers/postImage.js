@@ -81,7 +81,11 @@ const postImage = async (req, res) => {
 		const image = new Image({ ...fields });
 		image.save().then((a) => {
 			console.log("success!");
-			res.status(200).json({ success: true, _id: fields._id });
+			res.status(200).json({
+				success: true,
+				_id: fields._id,
+				user: req.user,
+			});
 		});
 	});
 };
