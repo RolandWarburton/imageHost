@@ -9,11 +9,6 @@ const postImage = require("../controllers/postImage");
 const deleteImageById = require("../controllers/deleteImageById");
 const authenticate = require("../middleware/authenticate");
 
-const bodyParser = require("body-parser");
-
-// create application/x-www-form-urlencoded parser
-const urlencodedParser = bodyParser.urlencoded({ extended: false });
-
 // * Add help text to the router which can be printed on the "/" route
 /**
  *
@@ -28,11 +23,11 @@ router.get("/image/meta/:id", getImageMeta);
 
 router.get("/image/:id", getImageById);
 
-router.get("/images", getImages);
+router.get("/images", [authenticate], getImages);
 
 router.post("/image", [authenticate], postImage);
 
-router.delete("/image/:id", deleteImageById);
+router.delete("/image/:id", [authenticate], deleteImageById);
 
 // Help for GET /image/meta/:id
 addHelpDescription(0, "Returns the json data for a single image id");

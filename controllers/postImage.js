@@ -5,7 +5,6 @@ const { v5: uuidv5 } = require("uuid");
 const mime = require("mime-types");
 const sizeOf = require("image-size");
 const debug = require("debug")("imageHost:controllers");
-const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
 
