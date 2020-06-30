@@ -1,5 +1,7 @@
 const User = require("../../models/userModel");
+const queryUser = require("../../dbQueries/queryUser");
 const jwt = require("jsonwebtoken");
+const { logger } = require("../../logger");
 const debug = require("debug")("imageHost:controllers");
 
 const login = (req, res) => {
@@ -12,40 +14,40 @@ const login = (req, res) => {
 		error = true;
 		return res
 			.status(400)
-			.json({ success: false, error: "missing username or password" });
+			.json({ success: false, error: "Missing username or password" });
 	}
 
-	User.findOne({ username: username }, (err, user) => {
-		if (!user) {
-			debug("user not found");
-			error = true;
-			return res
-				.status(404)
-				.json({ success: false, error: "user not found" });
-		}
+	queryUser(username)
+		.then((user) => {
+			if (!user) {
+				throw "User was found";
+			}
 
-		if (err) {
-			debug("Something went wrong finding the user");
-			error = true;
-			return res
-				.status(500)
-				.json({ success: false, error: "Something went wrong" });
-		}
+			if (!error && user.password == password) {
+				debug("user passed authentication");
 
-		if (!error && user.password == password) {
-			debug("user passed authentication");
-			const token = jwt.sign({ _id: user._id }, process.env.USER_KEY);
-			res.header("auth-token", token);
-			return res
-				.status(200)
-				.json({ success: true, user: user, token: token });
-		} else {
-			debug("users password was incorrect");
-			return res
-				.status(403)
-				.json({ success: false, error: "wrong password" });
-		}
-	});
+				// sign a token for the user
+				const token = jwt.sign({ _id: user._id }, process.env.USER_KEY);
+
+				// put the signed token in the response header
+				res.header("auth-token", token);
+
+				// return a success message with the user and the token
+				return res
+					.status(200)
+					.json({ success: true, user: user, token: token });
+			} else {
+				debug("users password was incorrect");
+				return res
+					.status(403)
+					.json({ success: false, error: "wrong password" });
+			}
+		})
+		.catch((err) => {
+			debug(err);
+			logger.error(err);
+			return res.status(404).json({ success: false, error: err });
+		});
 };
 
 module.exports = login;
