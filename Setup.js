@@ -13,11 +13,11 @@ const createDir = (path) => {
 		});
 };
 
-if (process.env.MODE == "development") {
+if (process.env.NODE_ENV == "development") {
 	createDir(process.env.DEVELOPMENT_UPLOAD_DIRECTORY_LOCATION);
 }
 
-if (process.env.MODE == "production") {
+if (process.env.NODE_ENV == "production") {
 	createDir(process.env.PRODUCTION_UPLOAD_DIRECTORY_LOCATION);
 }
 

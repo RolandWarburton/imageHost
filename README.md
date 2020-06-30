@@ -13,7 +13,7 @@ Make sure to include a `.env` file on the root of the project containing.
 
 ```none
 DB_CONNECTION=mongodb://username:password@127.0.0.1:27017/databaseName
-MODE=development | production
+NODE_ENV=development
 UPLOAD_DIRECTORY_LOCATION=./uploads
 ```
 
