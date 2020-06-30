@@ -42,10 +42,18 @@ const postImage = async (req, res) => {
 
 		// if there are too many files
 		if (files.length > 0) {
-			next(err);
 			res.status(403).json({
 				success: false,
 				error: "There was too many files submitted.",
+			});
+			return;
+		}
+
+		// if there was no file
+		if (!files.image) {
+			res.status(403).json({
+				success: false,
+				error: "No file was submitted.",
 			});
 			return;
 		}
@@ -80,13 +88,17 @@ const postImage = async (req, res) => {
 		// save the a new object to the database
 		const image = new Image({ ...fields });
 		image.save().then((a) => {
-			console.log("success!");
+			console.log("success uploading object to MongoDB!");
 			res.status(200).json({
 				success: true,
 				_id: fields._id,
 				user: req.user,
 			});
 		});
+	});
+
+	form.on("end", () => {
+		debug("Finished processing form");
 	});
 };
 
