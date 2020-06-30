@@ -84,8 +84,9 @@ const postImage = async (req, res) => {
 			dimensions: { width: dimensions.width, height: dimensions.height },
 		};
 
+		debug(req.user._id);
 		// save the a new object to the database
-		const image = new Image({ ...fields });
+		const image = new Image({ ...fields, user_id: req.user._id });
 		image.save().then((a) => {
 			console.log("success uploading object to MongoDB!");
 			res.status(200).json({

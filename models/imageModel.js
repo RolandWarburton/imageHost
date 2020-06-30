@@ -44,6 +44,10 @@ const Image = mongoose.Schema(
 			type: String,
 			require: true,
 		},
+		user_id: {
+			type: Object,
+			require: true,
+		},
 	},
 	{ collection: "imageHost", autoCreate: true }
 );
