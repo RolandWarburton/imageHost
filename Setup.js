@@ -39,7 +39,9 @@ db.once("open", function () {
 				});
 			} else {
 				debug("no new user needed, closing the connection");
-				mongoose.disconnect();
+				mongoose.disconnect().then(() => {
+					debug("Closed the database connection");
+				});
 			}
 			return true;
 		});

@@ -6,22 +6,24 @@ require("dotenv").config();
 /** Returns a promise that resolves to an object from the imageHost.users database
  * or null if not found
  * @example
- * queryUser("roland");
- * @param {string} username - mongoDB username of the user to lookup
+ * queryUser("username", "roland");
+ * @param {string} queryField - The key to lookup. Eg. "username"
+ * @param {string} queryValue - The value to loopup. Eg. "roland"
  */
-const queryUser = (username) => {
+const queryUser = (queryField, queryValue) => {
 	debug("Running queryUser from db queries...");
-	return User.findOne({ username: username }, (err, user) => {
+	debug(`Looking for user where ${queryField} = ${queryValue}`);
+	return User.findOne({ [queryField]: queryValue }, (err, user) => {
 		if (err) {
 			debug(`An error occurred when looking for a user`);
 		}
 
 		if (!user) {
-			debug(`didnt find a user ${username}`);
+			debug(`didnt find a user ${queryValue}`);
 			return undefined;
 		}
 
-		debug(`Found user ${username}`);
+		debug(`Found user ${user.username}`);
 		return user;
 	});
 };

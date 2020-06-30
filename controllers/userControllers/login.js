@@ -17,16 +17,17 @@ const login = (req, res) => {
 			.json({ success: false, error: "Missing username or password" });
 	}
 
-	queryUser(username)
+	queryUser("username", username)
 		.then((user) => {
 			if (!user) {
 				throw "User was found";
 			}
 
 			if (!error && user.password == password) {
-				debug("user passed authentication");
+				debug("User passed authentication");
 
 				// sign a token for the user
+				debug("Signing a new token for the user");
 				const token = jwt.sign({ _id: user._id }, process.env.USER_KEY);
 
 				// put the signed token in the response header
