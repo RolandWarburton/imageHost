@@ -2,12 +2,12 @@ const User = require("../models/userModel");
 const debug = require("debug")("imageHost:query");
 require("dotenv").config();
 
-// * get a single images meta
-/** Returns a promise that resolves to an object from the imageHost.imageHost database
- * or undefined if not found
+// * get a users info from the users table
+/** Returns a promise that resolves to an object from the imageHost.users database
+ * or null if not found
  * @example
- * queryImageMeta("55d6800f-43ff-5519-aba6-c100a0e9cad9");
- * @param {string} id - mongoDB _id of object to lookup
+ * queryUser("roland");
+ * @param {string} username - mongoDB username of the user to lookup
  */
 const queryUser = async (username) => {
 	debug("Running queryUser from db queries...");
