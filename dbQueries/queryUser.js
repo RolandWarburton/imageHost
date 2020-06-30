@@ -9,12 +9,19 @@ require("dotenv").config();
  * queryUser("roland");
  * @param {string} username - mongoDB username of the user to lookup
  */
-const queryUser = async (username) => {
+const queryUser = (username) => {
 	debug("Running queryUser from db queries...");
 	return User.findOne({ username: username }, (err, user) => {
-		if (!user) {
-			return;
+		if (err) {
+			debug(`An error occurred when looking for a user`);
 		}
+
+		if (!user) {
+			debug(`didnt find a user ${username}`);
+			return undefined;
+		}
+
+		debug(`Found user ${username}`);
 		return user;
 	});
 };

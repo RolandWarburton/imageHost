@@ -10,6 +10,10 @@ const User = mongoose.Schema(
 			type: String,
 			require: true,
 		},
+		superUser: {
+			type: Boolean,
+			require: true,
+		},
 	},
 	{ collection: "users", autoCreate: true }
 );

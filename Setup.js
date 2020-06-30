@@ -1,24 +1,46 @@
 const fs = require("fs");
+const path = require("path");
 const dotenv = require("dotenv").config();
+const User = require("./models/userModel");
+const debug = require("debug")("imageHost:setup");
+const db = require("./database");
+const mongoose = require("mongoose");
+const chalk = require("chalk");
+const queryUser = require("./dbQueries/queryUser");
 
-const createDir = (path) => {
-	if (!fs.existsSync(path))
-		fs.mkdir(path, (err) => {
-			if (err) {
-				console.error(err);
-				return;
+// Tell the user if theres an issue with the connection
+db.on("error", console.error.bind(console, "MongoDB connection error:"));
+
+// TODO make this use async/await to make it c l e a n
+// once connected try and find the AccountMaster account. If it doesnt exist create it
+db.once("open", function () {
+	const a = queryUser("AccountMaster")
+		.then((user) => {
+			if (user) {
+				debug("AccountMaster exists");
+				return true;
 			} else {
-				console.log(`Build directory: ${path}`);
+				debug("user does not exist");
+				return false;
 			}
+		})
+		.then((AccountMasterUserExists) => {
+			if (!AccountMasterUserExists) {
+				debug("creating AccountMaster account...");
+				const accountMaster = new User({
+					username: "AccountMaster",
+					password: "rhinos",
+					superUser: true,
+				});
+
+				// save the account into the database and close the connection
+				accountMaster.save().then(() => {
+					mongoose.disconnect();
+				});
+			} else {
+				debug("no new user needed, closing the connection");
+				mongoose.disconnect();
+			}
+			return true;
 		});
-};
-
-if (process.env.NODE_ENV == "development") {
-	createDir(process.env.DEVELOPMENT_UPLOAD_DIRECTORY_LOCATION);
-}
-
-if (process.env.NODE_ENV == "production") {
-	createDir(process.env.PRODUCTION_UPLOAD_DIRECTORY_LOCATION);
-}
-
-console.log("Setup.js");
+});
