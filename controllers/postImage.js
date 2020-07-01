@@ -132,8 +132,6 @@ const postImage = (req, res) => {
 		// set the id
 		image._id = UUID;
 
-		debug(image);
-
 		image.save().then((document) => {
 			debug("saved image to database");
 			debug(document);
