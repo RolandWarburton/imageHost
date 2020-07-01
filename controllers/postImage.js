@@ -11,8 +11,7 @@ const debug = require("debug")("imageHost:controllers");
 
 require("dotenv").config();
 
-// txt = svg
-const imageFiletypes = ["gif", "ico", "bmp", "jpeg", "png", "txt", "svg"];
+const imageFiletypes = ["gif", "ico", "bmp", "jpeg", "png", "svg"];
 const mediaFiletypes = ["mp4", "webm"];
 
 const getFilepathDetails = (mimetype, uuid) => {
