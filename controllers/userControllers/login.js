@@ -1,54 +1,49 @@
 const User = require("../../models/userModel");
 const queryUser = require("../../dbQueries/queryUser");
 const jwt = require("jsonwebtoken");
+const { validateUser } = require("../../validation/validateUser");
 const { logger } = require("../../logger");
 const debug = require("debug")("imageHost:controllers");
 
-const login = (req, res) => {
+const login = async (req, res) => {
+	// get the username and password from the body (x-www-form-urlencoded)
 	const username = req.body.username;
 	const password = req.body.password;
-	let error = false;
 
-	if (!username || !password) {
-		debug("username or password was not provided");
-		error = true;
-		return res
-			.status(400)
-			.json({ success: false, error: "Missing username or password" });
+	// Check if the new users details are correct
+	const { isVaidUser, error } = validateUser(username, password);
+	if (!isVaidUser) {
+		return res.status(401).json({ success: false, error: error });
 	}
 
-	queryUser("username", username)
-		.then((user) => {
-			if (!user) {
-				throw "User was found";
-			}
+	const user = await queryUser("username", username);
 
-			if (!error && user.password == password) {
-				debug("User passed authentication");
-
-				// sign a token for the user
-				debug("Signing a new token for the user");
-				const token = jwt.sign({ _id: user._id }, process.env.USER_KEY);
-
-				// put the signed token in the response header
-				res.header("auth-token", token);
-
-				// return a success message with the user and the token
-				return res
-					.status(200)
-					.json({ success: true, user: user, token: token });
-			} else {
-				debug("users password was incorrect");
-				return res
-					.status(403)
-					.json({ success: false, error: "wrong password" });
-			}
-		})
-		.catch((err) => {
-			debug(err);
-			logger.error(err);
-			return res.status(404).json({ success: false, error: err });
+	// check if the user was retrieved from the database
+	if (!user) {
+		return res.status(401).json({
+			success: false,
+			error: `Could not find user ${username}`,
 		});
+	}
+
+	// Check the password is correct
+	if (user.password != password) {
+		return res.status(401).json({
+			success: false,
+			error: `Wrong password for ${username}`,
+		});
+	}
+
+	// sign a token for the user
+	debug("Signing a new token for the user");
+	const token = jwt.sign({ _id: user._id }, process.env.USER_KEY);
+
+	// put the signed token in the response header
+	debug("putting the auth-token into the res.header");
+	res.header("auth-token", token);
+
+	// return 200 all good and attach the user and token
+	return res.status(200).json({ success: true, user: user, token: token });
 };
 
 module.exports = login;
