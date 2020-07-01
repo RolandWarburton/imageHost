@@ -43,12 +43,12 @@ const postImage = (req, res) => {
 	let postedImage = false;
 	const UUID = uuidv5(Math.random().toString(), uuidv5.URL);
 
-	// 100MB filesize limit
+	// 1GB filesize limit
 	const busboy = new Busboy({
 		headers: req.headers,
 		limits: {
 			files: 1,
-			fileSize: 100 * 1024 * 1024,
+			fileSize: 1000 * 1024 * 1024,
 		},
 	});
 
