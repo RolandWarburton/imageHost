@@ -72,6 +72,7 @@ const postImage = (req, res) => {
 
 		postedImage = true;
 		image.path = saveFilepath;
+		image.meta.mime = mimetype;
 
 		const f = fs.createWriteStream(saveFilepath);
 		file.pipe(f);
@@ -93,8 +94,6 @@ const postImage = (req, res) => {
 		) => {
 			// stick this field onto the image object
 			image[fieldname] = val;
-			// set the mime type
-			image.meta.mime = mimetype;
 		}
 	);
 
