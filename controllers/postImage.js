@@ -91,8 +91,8 @@ const postImage = async (req, res) => {
 			case 'webm':
 			case 'mp4':
 				dimensions = {
-					height: 0,
-					width: 0
+					height: undefined,
+					width: undefined
 				}
 				break;
 
