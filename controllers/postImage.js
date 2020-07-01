@@ -73,8 +73,35 @@ const postImage = async (req, res) => {
 		// store the filepath to retrieve later when getting the image
 		fields.path = files.image.path;
 
-		// get the image dimensions
-		const dimensions = sizeOf(files.image.path);
+		debug(`File extension: ${mime.extension(files.image.type)}`);
+
+		// check appropriate dimensions for supported image formats
+		var dimensions;
+
+		switch(mime.extension(files.image.type))
+		{
+			case 'gif':
+			case 'png':
+			case 'jpg':
+				dimensions = sizeOf(files.image.path);
+				break;
+			
+			case 'svg':
+			case 'webm':
+			case 'mp4':
+				res.status(501).json({
+					success: false,
+					error: "Unsupported video format",
+				});
+				return;
+
+			default:
+				res.status(415).json({
+					success: false,
+					error: "Unsupported file type",
+				});
+				return;
+		}
 
 		// attach metadata (timestamps and image dimensions)
 		fields.meta = {
