@@ -35,10 +35,6 @@ const getFilepathDetails = (mimetype, uuid) => {
 	};
 };
 
-const getFileDimensions = (file) => {
-	debug(sizeOf(file));
-};
-
 const getdim = util.promisify(sizeOf);
 
 const postImage = (req, res) => {
