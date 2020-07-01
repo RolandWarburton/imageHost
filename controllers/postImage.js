@@ -1,133 +1,156 @@
 const Image = require("../models/imageModel");
 const path = require("path");
 const Formidable = require("formidable");
+const Busboy = require("busboy");
 const { v5: uuidv5 } = require("uuid");
 const mime = require("mime-types");
 const sizeOf = require("image-size");
+const fs = require("fs");
+const util = require("util");
 const debug = require("debug")("imageHost:controllers");
 
 require("dotenv").config();
 
-const postImage = async (req, res) => {
+// txt = svg
+const imageFiletypes = ["gif", "ico", "bmp", "jpeg", "png", "txt", "svg"];
+const mediaFiletypes = ["mp4", "webm"];
+
+const getFilepathDetails = (mimetype, uuid) => {
+	// make a random filename
+	const filehash = uuid;
+
+	// get the extension
+	const fileExtension = mime.extension(mimetype);
+
+	// get the filepath including the file itself
+	const saveFilepath = path.resolve(
+		process.env.UPLOAD_DIRECTORY_LOCATION,
+		filehash + "." + fileExtension
+	);
+
+	return {
+		filehash: filehash,
+		fileExtension: fileExtension,
+		saveFilepath: saveFilepath,
+	};
+};
+
+const getFileDimensions = (file) => {
+	debug(sizeOf(file));
+};
+
+const getdim = util.promisify(sizeOf);
+
+const postImage = (req, res) => {
 	debug("Running postImage...");
 
-	// create a new form
-	const form = new Formidable({
-		multiples: false,
-		uploadDir: "./uploads",
-		keepExtensions: true,
-	});
-
-	// generate a random ID to use the the filename and the _id
+	const image = new Image();
+	let postedImage = false;
 	const UUID = uuidv5(Math.random().toString(), uuidv5.URL);
 
-	//rename the incoming file to the file's name
-	form.on("fileBegin", function (name, file) {
-		file.path = path.resolve(
-			form.uploadDir,
-			UUID + "." + mime.extension(file.type)
-		);
+	// 100MB filesize limit
+	const busboy = new Busboy({
+		headers: req.headers,
+		limits: {
+			files: 1,
+			fileSize: 100 * 1024 * 1024,
+		},
 	});
 
-	// this part triggers when the fields and file are read in
-	form.parse(req, (err, fields, files) => {
-		debug("parsing form...");
-		// if there is a general error
-		if (err) {
-			next(err);
-			res.status(400).json({ success: false });
-			return;
-		}
+	// * ============================== On File ==============================
+	busboy.on("file", (fieldname, file, filename, encoding, mimetype) => {
+		const { saveFilepath, fileExtension } = getFilepathDetails(
+			mimetype,
+			UUID
+		);
 
-		// if there are too many files
-		if (files.length > 0) {
-			res.status(403).json({
+		if (
+			!imageFiletypes.includes(fileExtension) &&
+			!mediaFiletypes.includes(fileExtension)
+		) {
+			res.status(400).json({
 				success: false,
-				error: "There was too many files submitted.",
+				error: "Wrong image format",
 			});
-			return;
+			res.end();
 		}
 
-		// if there was no file
-		if (!files.image) {
-			res.status(403).json({
-				success: false,
-				error: "No file was submitted.",
-			});
-			return;
-		}
+		postedImage = true;
+		image.path = saveFilepath;
 
-		// create additional time metadata
-		const uploadDate = new Date();
-		const uploadMonth = new Date().getMonth();
-		const uploadYear = new Date().getUTCFullYear();
-
-		// set the primary key
-		fields._id = UUID;
-
-		// add time metadata to fields
-		fields.uploadDate = uploadDate;
-		fields.uploadMonth = uploadDate;
-		fields.uploadYear = uploadYear;
-
-		// store the filepath to retrieve later when getting the image
-		fields.path = files.image.path;
-
-		debug(`File extension: ${mime.extension(files.image.type)}`);
-
-		// check appropriate dimensions for supported image formats
-		var dimensions;
-
-		switch(mime.extension(files.image.type))
-		{
-			case 'gif':
-			case 'png':
-			case 'jpg':
-			case 'jpeg':
-				dimensions = sizeOf(files.image.path);
-				break;
-			
-			case 'svg':
-			case 'webm':
-			case 'mp4':
-				dimensions = {
-					height: undefined,
-					width: undefined
-				}
-				break;
-
-			default:
-				res.status(415).json({
-					success: false,
-					error: "Unsupported file type",
-				});
-				return;
-		}
-
-		// attach metadata (timestamps and image dimensions)
-		fields.meta = {
-			uploadDate: uploadDate,
-			uploadMonth: uploadMonth,
-			uploadYear: uploadYear,
-			dimensions: { width: dimensions.width, height: dimensions.height },
-		};
-
-		debug(req.user._id);
-		// save the a new object to the database
-		const image = new Image({ ...fields, user_id: req.user._id });
-		image.save().then((a) => {
-			console.log("success uploading object to MongoDB!");
-			res.status(200).json({
-				success: true,
-				_id: fields._id,
-				user: req.user,
-			});
+		const f = fs.createWriteStream(saveFilepath);
+		file.pipe(f);
+		f.on("finish", () => {
+			debug(`saved image to filesystem`);
 		});
 	});
 
-	form.on("end", () => {
-		debug("Finished processing form");
+	// * ============================== On Field ==============================
+	busboy.on(
+		"field",
+		(
+			fieldname,
+			val,
+			fieldnameTruncated,
+			valTruncated,
+			encoding,
+			mimetype
+		) => {
+			// stick this field onto the image object
+			image[fieldname] = val;
+			// set the mime type
+			image.meta.mime = mimetype;
+		}
+	);
+
+	// * ============================== On Finish ==============================
+	busboy.on("finish", async () => {
+		if (!postedImage) {
+			// respond with 400 ❌
+			res.status(400).json({
+				success: false,
+				error: "No image provided.",
+			});
+		}
+
+		// set meta
+		image.meta.uploadDate = new Date();
+		image.meta.uploadMonth = new Date().getMonth();
+		image.meta.uploadYear = new Date().getUTCFullYear();
+
+		const extension = mime.extension(image.meta.mime);
+
+		debug(extension);
+
+		// get the dimension meta
+		if (imageFiletypes.includes(extension)) {
+			// its a static image. get dims using the conventional way
+			const dim = await getdim(image.path);
+			image.meta.dimensions = { width: dim.width, height: dim.height };
+		}
+		if (mediaFiletypes.includes(extension)) {
+			// its a webm or mp4. idk how to do these yet 😧
+			image.meta.dimensions = { width: undefined, height: undefined };
+		}
+
+		// set the id
+		image._id = UUID;
+
+		debug(image);
+
+		image.save().then((document) => {
+			debug("saved image to database");
+			debug(document);
+		});
+
+		// respond all good ✅
+		res.status(200).json({ success: true, data: image });
+		res.end();
 	});
+
+	// Connects this read stream to busboy WriteStream to write the file and do other things
+	// https://nodejs.org/docs/v0.4.8/api/streams.html#stream.pipe
+	return req.pipe(busboy);
 };
 
 module.exports = postImage;

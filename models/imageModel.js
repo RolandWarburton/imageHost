@@ -28,6 +28,10 @@ const Image = mongoose.Schema(
 				type: Number,
 				require: false,
 			},
+			mime: {
+				type: String,
+				require: false,
+			},
 			dimensions: {
 				require: false,
 				width: {
