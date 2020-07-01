@@ -4,6 +4,9 @@ const debug = require("debug")("imageHost:controllers");
 const path = require("path");
 require("dotenv").config();
 
+const imageFiletypes = ["gif", "ico", "bmp", "jpeg", "png", "svg"];
+const mediaFiletypes = ["mp4", "webm"];
+
 const getImageById = (req, res) => {
 	debug("Running getImageById...");
 	res.setHeader("accept-ranges", "bytes");
@@ -15,90 +18,72 @@ const getImageById = (req, res) => {
 			res.status(400).json({ success: false, error: err });
 		})
 		.on("data", (image) => {
+			debug("found some data");
 			// get extension name of image
-			const extension = path.extname(image.path).substring(1);
+			const extension = path.parse(image.path).ext.replace(".", "");
 
 			debug(`Extension type: ${extension}`);
 
-			switch (extension) {
-				case "gif":
-				case "png":
-				case "jpg":
-				case "jpeg":
-					res.setHeader("content-type", "image/png");
-					res.status(200).send(fs.readFileSync(image.path));
-					return;
+			if (
+				!imageFiletypes.includes(extension) &&
+				!mediaFiletypes.includes(extension)
+			) {
+				debug("unsupported filetype. not in the list of allowed files");
+				return res.status(415).json({
+					success: false,
+					error: "Unsupported file type",
+				});
+			}
 
-				case "webm":
-				case "mp4":
-					fs.stat(image.path, (error, stats) => {
-						var headers;
+			if (imageFiletypes.includes(extension)) {
+				debug("its an image");
+				const s = fs.createReadStream(image.path);
+				s.on("open", function () {
+					res.set("Content-Type", image.meta.mime);
+					s.pipe(res);
+				});
+				s.on("error", function () {
+					res.set("Content-Type", "text/plain");
+					res.status(404).end("Not found");
+				});
+			}
 
-						if (error) {
-							res.setHeader("content-type", "text/html");
-							res.status(404).json({
-								success: false,
-								error: "An unexpected error occurred",
-							});
-						}
-						var totalSize = stats.size;
-
-						if (req.headers.range) {
-							const range = req.headers.range;
-
-							const parts = range
-								.replace(/bytes=/, "")
-								.split("-");
-							var partStart = parts[0];
-							var partEnd = parts[1];
-
-							var start = parseInt(partStart, 10);
-							var end = partEnd
-								? parseInt(partEnd, 10)
-								: totalSize - 1;
-
-							var chunkSize = end - start + 1;
-
-							res.setHeader("content-type", "video/mp4");
-							res.setHeader(
-								"content-range",
-								"bytes " + start + "-" + end + "/" + totalSize
-							);
-							res.setHeader("content-length", chunkSize);
-						} else {
-							res.setHeader("content-type", "video/mp4");
-							res.setHeader(
-								"content-range",
-								"bytes " + start + "-" + end + "/" + totalSize
-							);
-
-							//res.writeHead(200, headers);
-						}
+			if (["webm", "mp4"].includes(extension)) {
+				const stat = fs.statSync(image.path);
+				const fileSize = stat.size;
+				const range = req.headers.range;
+				if (range) {
+					const parts = range.replace(/bytes=/, "").split("-");
+					const start = parseInt(parts[0], 10);
+					const end = parts[1]
+						? parseInt(parts[1], 10)
+						: fileSize - 1;
+					const chunksize = end - start + 1;
+					const file = fs.createReadStream(image.path, {
+						start,
+						end,
 					});
-
-					var fileStream = fs.createReadStream(image.path);
-
-					fileStream.pipe(res);
-
-					fileStream.on("error", (error) => {
-						res.status(500).json({
-							success: false,
-							error: "An unexpected error has occurred",
-						});
-					});
-					return;
-
-				case "svg":
-				default:
-					res.setHeader("content-type", "text/html");
-					res.status(415).json({
-						success: false,
-						error: "Unsupported file type",
-					});
-					return;
+					const head = {
+						"Content-Range": `bytes ${start}-${end}/${fileSize}`,
+						"Accept-Ranges": "bytes",
+						"Content-Length": chunksize,
+						"Content-Type": "video/mp4",
+					};
+					res.writeHead(206, head);
+					file.pipe(res);
+				} else {
+					const head = {
+						"Content-Length": fileSize,
+						"Content-Type": "video/mp4",
+					};
+					res.writeHead(200, head);
+					fs.createReadStream(image.path).pipe(res);
+				}
 			}
 		})
-		.on("end", () => {});
+		.on("end", () => {
+			// do nothing
+		});
 };
 
 module.exports = getImageById;
