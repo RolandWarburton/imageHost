@@ -83,17 +83,18 @@ const postImage = async (req, res) => {
 			case 'gif':
 			case 'png':
 			case 'jpg':
+			case 'jpeg':
 				dimensions = sizeOf(files.image.path);
 				break;
 			
 			case 'svg':
 			case 'webm':
 			case 'mp4':
-				res.status(501).json({
-					success: false,
-					error: "Unsupported video format",
-				});
-				return;
+				dimensions = {
+					height: 0,
+					width: 0
+				}
+				break;
 
 			default:
 				res.status(415).json({
