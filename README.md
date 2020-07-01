@@ -14,6 +14,7 @@ Make sure to include a `.env` file on the root of the project containing.
 ```none
 DB_CONNECTION=mongodb://username:password@127.0.0.1:27017/databaseName
 NODE_ENV=development
+USER_KEY=123456
 UPLOAD_DIRECTORY_LOCATION=./uploads
 ```
 
