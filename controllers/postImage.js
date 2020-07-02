@@ -39,8 +39,21 @@ const getdim = util.promisify(sizeOf);
 const postImage = (req, res) => {
 	debug("Running postImage...");
 
+	// define some errors
+	const errors = {
+		file_too_big: { http: 455, error: "file was too big" },
+		no_file: { http: 400, error: "no file" },
+		too_many_files: { http: 400, error: "too many files" },
+		wrong_file_format: { http: 401, error: "wrong format" },
+		general_fail: { http: 400, error: "general failure" },
+	};
+
+	// define a response object
+	// the response object is changed when errors are encountered
+	let response = { success: true, http: 200, error: "" };
+
 	const image = new Image();
-	let postedImage = false;
+	// let postedImage = false;
 	const UUID = uuidv5(Math.random().toString(), uuidv5.URL);
 
 	// 1GB filesize limit
@@ -54,30 +67,47 @@ const postImage = (req, res) => {
 
 	// * ============================== On File ==============================
 	busboy.on("file", (fieldname, file, filename, encoding, mimetype) => {
+		// get details about the file
 		const { saveFilepath, fileExtension } = getFilepathDetails(
 			mimetype,
 			UUID
 		);
 
+		// create a writeStream
+		const f = fs.createWriteStream(saveFilepath);
+		file.pipe(f);
+
+		// check its filetype
 		if (
 			!imageFiletypes.includes(fileExtension) &&
 			!mediaFiletypes.includes(fileExtension)
 		) {
-			res.status(400).json({
-				success: false,
-				error: "Wrong image format",
-			});
-			res.end();
+			debug(errors.wrong_file_format.error);
+			response.success = false;
+			response.http = errors.wrong_file_format.http;
+			response.error = errors.wrong_file_format.error;
 		}
 
-		postedImage = true;
+		// this will emit if the file exceeds the filesize
+		file.on("limit", () => {
+			debug(`response will be ${errors.file_too_big.http}`);
+			response.success = false;
+			response.http = errors.file_too_big.http;
+			response.error = errors.file_too_big.error;
+			fs.unlink(saveFilepath, () => {
+				debug(`deleted ${path.parse(saveFilepath).name}`);
+			});
+		});
+
 		image.path = saveFilepath;
 		image.meta.mime = mimetype;
 
-		const f = fs.createWriteStream(saveFilepath);
-		file.pipe(f);
 		f.on("finish", () => {
-			debug(`saved image to filesystem`);
+			if (response.success) {
+				debug("saved image to filesystem");
+			} else {
+				debug("closed the file stream");
+			}
 		});
 	});
 
@@ -99,14 +129,14 @@ const postImage = (req, res) => {
 
 	// * ============================== On Finish ==============================
 	busboy.on("finish", async () => {
-		if (!postedImage) {
-			// respond with 400 ❌
-			res.status(400).json({
-				success: false,
-				error: "No image provided.",
-			});
+		// return an error if something went wrong ❌
+		if (!response.success) {
+			return res
+				.status(response.http)
+				.json({ success: response.success, error: response.error });
 		}
 
+		// otherwise procees ✅
 		// set meta
 		image.meta.uploadDate = new Date();
 		image.meta.uploadMonth = new Date().getMonth();
@@ -114,14 +144,18 @@ const postImage = (req, res) => {
 
 		const extension = mime.extension(image.meta.mime);
 
-		debug(extension);
+		// debug(extension);
 
 		// get the dimension meta
 		if (imageFiletypes.includes(extension)) {
 			// its a static image. get dims using the conventional way
 			const dim = await getdim(image.path);
-			image.meta.dimensions = { width: dim.width, height: dim.height };
+			image.meta.dimensions = {
+				width: dim.width,
+				height: dim.height,
+			};
 		}
+
 		if (mediaFiletypes.includes(extension)) {
 			// its a webm or mp4. idk how to do these yet 😧
 			image.meta.dimensions = { width: undefined, height: undefined };
@@ -131,13 +165,11 @@ const postImage = (req, res) => {
 		image._id = UUID;
 
 		image.save().then((document) => {
-			debug("saved image to database");
-			debug(document);
+			debug("saved image object to database");
+			return res
+				.status(response.http)
+				.json({ success: response.success, data: image });
 		});
-
-		// respond all good ✅
-		res.status(200).json({ success: true, data: image });
-		res.end();
 	});
 
 	// Connects this read stream to busboy WriteStream to write the file and do other things
