@@ -1,13 +1,13 @@
 const fs = require("fs");
 const path = require("path");
 const debug = require("debug")("imageHost:setup");
-const db = require("./database");
+const db = require("../database");
 const mongoose = require("mongoose");
 const chalk = require("chalk");
 const internalIp = require("internal-ip");
 const jwt = require("jsonwebtoken");
-const { Image } = require("./models/imageModel");
-const { User } = require("./models/userModel");
+const { Image } = require("../models/imageModel");
+const { User } = require("../models/userModel");
 const sizeOf = require("image-size");
 const { v5: uuidv5 } = require("uuid");
 const FormData = require("form-data");

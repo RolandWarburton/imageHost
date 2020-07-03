@@ -19,6 +19,7 @@ NODE_ENV=development
 USER_KEY=123456
 UPLOAD_DIRECTORY_LOCATION=./uploads
 PORT=2020
+ROOT=/home/roland/Documents/Projects/imageHost
 ```
 
 ### Running locally with authentication
