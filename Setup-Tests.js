@@ -1,12 +1,9 @@
 const fs = require("fs");
-const util = require("util");
 const path = require("path");
-const dotenv = require("dotenv").config();
 const debug = require("debug")("imageHost:setup");
 const db = require("./database");
 const mongoose = require("mongoose");
 const chalk = require("chalk");
-const fetch = require("node-fetch");
 const internalIp = require("internal-ip");
 const jwt = require("jsonwebtoken");
 const { Image } = require("./models/imageModel");
@@ -14,6 +11,7 @@ const { User } = require("./models/userModel");
 const sizeOf = require("image-size");
 const { v5: uuidv5 } = require("uuid");
 const FormData = require("form-data");
+require("dotenv").config();
 
 /** Return a promise that resolves to a user
  * @example addUser("roland", "rhinos", false)
@@ -74,8 +72,6 @@ const addImage = async (filepath, user_id) => {
 		// debug(err);
 	}
 
-	debug(image);
-
 	return image.save().then((document) => {
 		debug(`saved ${document._id} to db`);
 		return document;
@@ -95,7 +91,7 @@ const setupTests = () => {
 		});
 
 		// delete everything in the image collection 🔥
-		Image.remove({}, (err, result) => {
+		Image.deleteMany({}, (err, result) => {
 			if (err) debug(err);
 			debug(`Deleting old images... 🔥\n${JSON.stringify(result)}`);
 		});
@@ -117,11 +113,6 @@ const setupTests = () => {
 			process.env.USER_KEY
 		);
 
-		// make sure the express server is running for this
-		// otherwise you cannot post data to the webserver
-		console.log(chalk.bgGreen.black("running the backend for a bit"));
-		const s = require("./server");
-
 		// get the ip and port for postImage()
 		const ip = await internalIp.v4();
 		const port = process.env.PORT || 2020;
@@ -131,7 +122,6 @@ const setupTests = () => {
 		const webm = path.resolve(__dirname, "testAssets", "webm.webm");
 		const mp4 = path.resolve(__dirname, "testAssets", "mp4.mp4");
 
-		debug(users);
 		// post images to imageHost.imageHost
 		const images = [
 			addImage(png, await users[0]._id),
@@ -145,7 +135,6 @@ const setupTests = () => {
 		console.log(chalk.magenta("STOPPING"));
 
 		mongoose.disconnect();
-		s.stop();
 	});
 };
 
