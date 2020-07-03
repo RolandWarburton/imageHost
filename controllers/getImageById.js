@@ -37,15 +37,7 @@ const getImageById = (req, res) => {
 
 			if (imageFiletypes.includes(extension)) {
 				debug("its an image");
-				const s = fs.createReadStream(image.path);
-				s.on("open", function () {
-					res.set("Content-Type", image.meta.mime);
-					s.pipe(res);
-				});
-				s.on("error", function () {
-					res.set("Content-Type", "text/plain");
-					res.status(404).end("Not found");
-				});
+				res.status(200).sendFile(image.path);
 			}
 
 			if (["webm", "mp4"].includes(extension)) {
