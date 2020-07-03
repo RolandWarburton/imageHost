@@ -149,11 +149,15 @@ const postImage = (req, res) => {
 		// get the dimension meta
 		if (imageFiletypes.includes(extension)) {
 			// its a static image. get dims using the conventional way
-			const dim = await getdim(image.path);
-			image.meta.dimensions = {
-				width: dim.width,
-				height: dim.height,
-			};
+			try {
+				const dim = await getdim(image.path);
+				image.meta.dimensions = {
+					width: dim.width,
+					height: dim.height,
+				};
+			} catch (err) {
+				debug(err);
+			}
 		}
 
 		if (mediaFiletypes.includes(extension)) {
