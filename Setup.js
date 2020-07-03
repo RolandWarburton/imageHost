@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const dotenv = require("dotenv").config();
-const User = require("./models/userModel");
+const { User } = require("./models/userModel");
 const debug = require("debug")("imageHost:setup");
 const db = require("./database");
 const mongoose = require("mongoose");
@@ -11,10 +11,9 @@ const queryUser = require("./dbQueries/queryUser");
 // Tell the user if theres an issue with the connection
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
-// TODO make this use async/await to make it c l e a n
 // once connected try and find the AccountMaster account. If it doesnt exist create it
-db.once("open", function () {
-	const a = queryUser("AccountMaster")
+db.once("open", () => {
+	queryUser("AccountMaster")
 		.then((user) => {
 			if (user) {
 				debug("AccountMaster exists");
