@@ -44,6 +44,7 @@
 	"devDependencies": {
 		"debug": "^4.1.1",
 		"jest": "^26.1.0",
+		"node-fetch": "^2.6.0",
 		"nodemon": "^2.0.4"
 	}
 }

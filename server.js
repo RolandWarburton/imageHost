@@ -59,7 +59,7 @@ app.get("*", (req, res) => {
 	res.status(200).json({ success: true, version: version, help: endpoints });
 });
 
-app.listen(port, async () => {
+const server = app.listen(port, async () => {
 	// get the internal IP
 	const ip = internalIp.v4();
 	console.log(
@@ -67,3 +67,9 @@ app.listen(port, async () => {
 	);
 	logger.info("Server started");
 });
+
+module.exports = {
+	stop: () => {
+		server.close();
+	},
+};

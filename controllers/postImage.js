@@ -144,8 +144,6 @@ const postImage = (req, res) => {
 
 		const extension = mime.extension(image.meta.mime);
 
-		// debug(extension);
-
 		// get the dimension meta
 		if (imageFiletypes.includes(extension)) {
 			// its a static image. get dims using the conventional way
