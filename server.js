@@ -37,7 +37,7 @@ for (layer of imageRoutes.stack) {
 }
 
 const app = express();
-const port = 2020;
+const port = process.env.PORT || 2020;
 
 // * database
 // throw an error if database conn fails

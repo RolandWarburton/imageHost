@@ -18,6 +18,7 @@ DB_CONNECTION=mongodb://username:password@127.0.0.1:27017/databaseName
 NODE_ENV=development
 USER_KEY=123456
 UPLOAD_DIRECTORY_LOCATION=./uploads
+PORT=2020
 ```
 
 ### Running locally with authentication
