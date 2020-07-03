@@ -1,4 +1,4 @@
-const Image = require("../models/imageModel");
+const { Image } = require("../models/imageModel");
 const fs = require("fs");
 const path = require("path");
 const debug = require("debug")("imageHost:controllers");

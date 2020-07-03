@@ -1,4 +1,4 @@
-const User = require("../models/userModel");
+const { User } = require("../models/userModel");
 const debug = require("debug")("imageHost:query");
 require("dotenv").config();
 

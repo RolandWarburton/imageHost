@@ -1,4 +1,4 @@
-const User = require("../../models/userModel");
+const { User } = require("../../models/userModel");
 const queryUser = require("../../dbQueries/queryUser");
 const { validateUser } = require("../../validation/validateUser");
 const debug = require("debug")("imageHost:controllers");

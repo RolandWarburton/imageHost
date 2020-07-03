@@ -1,4 +1,4 @@
-const Image = require("../models/imageModel");
+const { Image } = require("../models/imageModel");
 const debug = require("debug")("imageHost:query");
 require("dotenv").config();
 

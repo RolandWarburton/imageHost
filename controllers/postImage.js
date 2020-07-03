@@ -1,4 +1,4 @@
-const Image = require("../models/imageModel");
+const { Image } = require("../models/imageModel");
 const path = require("path");
 const Formidable = require("formidable");
 const Busboy = require("busboy");

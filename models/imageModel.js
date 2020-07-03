@@ -1,62 +1,66 @@
 const mongoose = require("mongoose");
 
-const Image = mongoose.Schema(
-	{
-		forceTags: {
-			type: Boolean,
+const schema = {
+	forceTags: {
+		type: Boolean,
+		require: false,
+	},
+	tags: {
+		type: Array,
+		require: true,
+	},
+	path: {
+		type: String,
+		require: true,
+	},
+	meta: {
+		require: false,
+		uploadDate: {
+			type: Number,
 			require: false,
 		},
-		tags: {
-			type: Array,
-			require: true,
-		},
-		path: {
-			type: String,
-			require: true,
-		},
-		meta: {
+		uploadMonth: {
+			type: Number,
 			require: false,
-			uploadDate: {
-				type: Number,
-				require: false,
-			},
-			uploadMonth: {
-				type: Number,
-				require: false,
-			},
-			uploadYear: {
-				type: Number,
-				require: false,
-			},
-			mime: {
-				type: String,
-				require: false,
-			},
-			dimensions: {
-				require: false,
-				width: {
-					type: Number,
-					require: false,
-				},
-				height: {
-					type: Number,
-					require: false,
-				},
-			},
 		},
-		_id: {
+		uploadYear: {
+			type: Number,
+			require: false,
+		},
+		mime: {
 			type: String,
-			require: true,
+			require: false,
 		},
-		user_id: {
-			type: Object,
-			require: true,
+		dimensions: {
+			require: false,
+			width: {
+				type: Number,
+				require: false,
+			},
+			height: {
+				type: Number,
+				require: false,
+			},
 		},
 	},
-	{ collection: "imageHost", autoCreate: true }
-);
+	_id: {
+		type: String,
+		require: true,
+	},
+	user_id: {
+		type: Object,
+		require: true,
+	},
+};
 
-module.exports = mongoose.model("Image", Image);
+const ImageSchema = mongoose.Schema(schema, {
+	collection: "imageHost",
+	autoCreate: true,
+});
+
+const Image = mongoose.model("Image", ImageSchema);
+
+module.exports = { Image, schema };
 
 // * Example data to insert
 // {
