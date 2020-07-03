@@ -9,6 +9,7 @@ const fs = require("fs");
 const util = require("util");
 const Dicer = require("dicer");
 const chalk = require("chalk");
+const Joi = require("@hapi/joi");
 var inspect = require("util").inspect;
 const debug = require("debug")("imageHost:controllers");
 const debugHeader = require("debug")("imageHost:headers");
@@ -19,6 +20,19 @@ require("dotenv").config();
 const imageFiletypes = ["gif", "ico", "bmp", "jpeg", "png", "svg"];
 const mediaFiletypes = ["mp4", "webm"];
 
+const schema = Joi.object({
+	body: Joi.any().required(),
+	bodylen: Joi.number().min(1).required(),
+	error: Joi.any().required(),
+	header: Joi.object({
+		"content-disposition": Joi.array().required(),
+		"content-type": Joi.array().required(),
+	}).required(),
+});
+
+var re3 = new RegExp('name="[a-z,A-Z].*"');
+let re = /(?=["'])(?:"[^"\\]*(?:\\[\s\S][^"\\]*)*"|'[^'\\]*(?:\\[\s\S][^'\\]*)*')/;
+const re4 = new RegExp(re);
 // const getFilepathDetails = (mimetype, uuid) => {
 // 	// make a random filename
 // 	const filehash = uuid;
@@ -45,9 +59,10 @@ const RE_BOUNDARY = /^multipart\/.+?(?: boundary=(?:(?:"(.+)")|(?:([^\s]+))))$/i
 
 const postImage = (req, res) => {
 	// let counter = 0;
-	let dataBuffers = [];
 	const m = RE_BOUNDARY.exec(req.headers["content-type"]);
 	const boundry = m[1] || m[2];
+
+	// Dicer is a WritableStream
 	const d = new Dicer({ boundary: boundry });
 	let state = { parts: [] };
 	debug(`the boundry is: \n${boundry}`);
@@ -57,6 +72,7 @@ const postImage = (req, res) => {
 
 		let part = {
 			body: undefined,
+			fieldname: undefined,
 			bodylen: 0,
 			error: undefined,
 			header: undefined,
@@ -64,38 +80,56 @@ const postImage = (req, res) => {
 
 		p.on("header", function (header) {
 			part.header = header;
+			// debugHeader(`matching on ${header["content-disposition"][0]}`);
+
+			header.fieldname = header["content-disposition"][0].match(re4)[0];
+
+			// debug("RESULT:");
+			// if (found != null) console.log(found[0]);
+			// while ((result = re3.exec(myString))) {
+			// 	debug(result, re3.lastIndex);
+			// }
+			// const a = {
+			// 	"content-disposition": header["content-disposition"].split(";"),
+			// 	"content-type": header["content-type"].split(";"),
+			// };
+			// const b = header["content-disposition"][0].split(";");
+			// debug(b);
 			for (var h in header) {
+				// debug(h);
+				// debugHeader(inspect(header[h]));
 				debugHeader(`H: k: ${inspect(h)} v: ${inspect(header[h])}`);
 			}
-		})
-			.on("data", (data) => {
-				// make a copy because we are using readSync which re-uses a buffer ...
-				var copy = new Buffer.alloc(data.length);
-				data.copy(copy);
-				data = copy;
-				if (!part.body) part.body = [data];
-				else part.body.push(data);
-				part.bodylen += data.length;
-			})
-			.on("end", () => {
-				if (part.body) {
-					part.body = Buffer.concat(part.body, part.bodylen);
-				}
-				state.parts.push(part);
-				debug(state);
-				debug("==================================");
-			});
+		});
 
-		// p.on("data", function (data) {
-		// 	// debugData(`${inspect(data.toString())}`);
-		// 	dataBuffers.push(data);
-		// });
+		p.on("data", (data) => {
+			// make a copy because we are using readSync which re-uses a buffer...
+			// var copy = new Buffer.alloc(data.length);
+			// data.copy(copy);
+			// data = copy;
+			if (!part.body) part.body = [data];
+			else part.body.push(data);
+			part.bodylen += data.length;
+			// debug(part);
+			// const { value, error } = schema.valid(part);
+		});
 
-		// p.on("end", function () {
-		// 	console.log(chalk.red("End of part\n"));
-		// 	let body = Buffer.concat(dataBuffers);
-		// 	debug(body);
-		// });
+		p.on("end", () => {
+			if (part.body) {
+				part.body = Buffer.concat(part.body, part.bodylen);
+			}
+			state.parts.push(part);
+			for (part of state.parts) {
+				// if (part.bodylen < 10) debugData(part.body.toString());
+				// debug(part);
+				// debug(`buffer len = ${part.body.length}`);
+			}
+			// debug("==================================");
+		});
+
+		p.on("end", function () {
+			console.log(chalk.red("End of part\n"));
+		});
 	});
 
 	d.on("finish", function () {
