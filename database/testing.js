@@ -8,9 +8,11 @@ const user = "roland";
 const pass = "rhinos";
 const db = "testing";
 const auth = "testing";
+const ip = "localhost";
 
 // connection string for the testing database
-const conn = `mongodb://${user}:${pass}:27017/${db}?authsource=${auth}`;
+const conn = `mongodb://${user}:${pass}@${ip}:27017/${db}?authSource=${auth}`;
+debug(`connecting to ${conn}`);
 
 // connect to the database
 mongoose

@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const debug = require("debug")("imageHost:setup");
-const db = require("../database/production");
 const mongoose = require("mongoose");
 const chalk = require("chalk");
 const internalIp = require("internal-ip");
@@ -12,6 +11,10 @@ const sizeOf = require("image-size");
 const { v5: uuidv5 } = require("uuid");
 const FormData = require("form-data");
 require("dotenv").config();
+
+// databases
+const prodDB = require("../database/production");
+const testDB = require("../database/testing");
 
 /** Return a promise that resolves to a user
  * @example addUser("roland", "rhinos", false)
@@ -80,10 +83,13 @@ const addImage = async (filepath, user_id) => {
 
 const setupTests = () => {
 	// Tell the user if theres an issue with the connection
-	db.on("error", console.error.bind(console, "MongoDB connection error:"));
+	testDB.on(
+		"error",
+		console.error.bind(console, "MongoDB connection error:")
+	);
 
 	// once connected try and find the AccountMaster account. If it doesnt exist create it
-	db.once("open", async () => {
+	testDB.once("open", async () => {
 		// delete everything in the test users collection 🔥
 		await User.deleteMany({}, (err, result) => {
 			if (err) debug(err);
