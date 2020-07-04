@@ -13,8 +13,8 @@ const FormData = require("form-data");
 require("dotenv").config();
 
 // databases
-const prodDB = require("../database/production");
 const testDB = require("../database/testing");
+// const server = require("../server");
 
 /** Return a promise that resolves to a user
  * @example addUser("roland", "rhinos", false)
@@ -23,11 +23,13 @@ const testDB = require("../database/testing");
  * @param {string} password - password of the user
  * @param {boolean} superuser - if this user can create new users or not
  */
-const addUser = async (username, password, superuser = false) => {
+const addUser = async (username, password, superUser) => {
+	superUser = !superUser ? false : superUser;
+
 	const newUser = new User({
 		username: username,
 		password: password,
-		superuser: superuser,
+		superUser: superUser,
 	});
 
 	return newUser
@@ -97,7 +99,7 @@ const setupTests = () => {
 		});
 
 		// delete everything in the image collection 🔥
-		Image.deleteMany({}, (err, result) => {
+		await Image.deleteMany({}, (err, result) => {
 			if (err) debug(err);
 			debug(`Deleting old images... 🔥\n${JSON.stringify(result)}`);
 		});
@@ -114,10 +116,10 @@ const setupTests = () => {
 
 		// create an account admin and sign a key for them to use for post requests
 		const accountMaster = await addUser("AccountMaster", "rhinos", true);
-		const accountMasterToken = jwt.sign(
-			{ _id: accountMaster._id },
-			process.env.USER_KEY
-		);
+		// const accountMasterToken = jwt.sign(
+		// 	{ _id: accountMaster._id },
+		// 	process.env.USER_KEY
+		// );
 
 		// get the ip and port for postImage()
 		const ip = await internalIp.v4();
