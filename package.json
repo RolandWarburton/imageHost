@@ -43,6 +43,7 @@
 	},
 	"devDependencies": {
 		"debug": "^4.1.1",
+		"form-data": "^3.0.0",
 		"jest": "^26.1.0",
 		"node-fetch": "^2.6.0",
 		"nodemon": "^2.0.4"
