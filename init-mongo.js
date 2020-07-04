@@ -10,6 +10,6 @@ for (let i = databases.length - 1; i >= 0; i--) {
 	db.createUser({
 		user: "roland",
 		pwd: "rhinos",
-		roles: ["readWrite"]
+		roles: [{role: "readWrite", db: databases}]
 	})
 }

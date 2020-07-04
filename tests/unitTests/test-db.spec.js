@@ -3,7 +3,10 @@ const path = require("path");
 const mongoose = require("mongoose");
 require("dotenv");
 
+// import db queries
 const queryUser = require("queryUser");
+const queryImageMeta = require("queryImageMeta");
+
 const db = require("../../database/testing");
 
 beforeAll(() => {
@@ -12,6 +15,7 @@ beforeAll(() => {
 });
 
 afterAll(() => {
+	// disconnect gracefully from the testing db to prevent a warning
 	mongoose.disconnect();
 });
 
@@ -43,31 +47,18 @@ describe("Check GET user queries on mongo", () => {
 			expect(user.superUser).toBeDefined();
 		});
 	});
+});
 
-	// test("returned user has all their fields", () => {
-	// 	db.once("open", () => {
-	// 		return queryUser("username", "user_notauser")
-	// 			.then((err, user) => {
-	// 				expect(user.username).toBeDefined();
-	// 				expect(user.password).toBeDefined();
-	// 				expect(user._id).toBeDefined();
-	// 				expect(user.superUser).toBeDefined();
-	// 				// expect(user).toBe("peanut butter");
-	// 			})
-	// 			.catch((err) => {});
-	// 	});
-	// 	mongoose.disconnect();
-	// });
-
-	// test("not found user returns error", () => {
-	// 	const user = queryUser("username", "user_notauser")
-	// 		.then((err, user) => {
-	// 			expect(user).toBe(null);
-	// 		})
-	// 		.catch((err) => {
-	// 			expect(err).not.toBe(null);
-	// 		});
-	// });
+describe("Check GET image meta queries on mongo", () => {
+	// ! GO GET AN ID FROM THE MONGO DATABASE FOR THIS TEST TO WORK
+	// ! Remove '.skip' once you have a correct image ID
+	test.skip("returns an image meta", () => {
+		return queryImageMeta("0b372629-c182-5edf-a385-9aaa19252fbd").then(
+			(user) => {
+				expect(user).toBeDefined();
+			}
+		);
+	});
 });
 
 // db.createUser({

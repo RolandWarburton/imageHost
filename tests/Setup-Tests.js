@@ -13,7 +13,8 @@ const FormData = require("form-data");
 require("dotenv").config();
 
 // databases
-const testDB = require("../database/testing");
+const { db: testDB, connectToDB } = require("../database");
+connectToDB(process.env.DB_CONNECTION_TESTING);
 // const server = require("../server");
 
 /** Return a promise that resolves to a user
@@ -107,8 +108,8 @@ const setupTests = () => {
 		// Create some test data
 		const users = [];
 		for (let i of Array(5).keys()) {
-			username = "user_" + i;
-			password = "password_" + i;
+			username = "user" + i;
+			password = "password" + i;
 			superuser = false;
 			users.push(addUser(username, password, superuser));
 		}
