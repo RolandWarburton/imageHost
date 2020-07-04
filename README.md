@@ -48,6 +48,10 @@ You may need to change the authentication database to **?authSource=admin** if y
 DB_CONNECTION=mongodb://roland:rhinos@mongo:27017/imageHost?authSource=imageHost
 ```
 
+## Testing
+
+Running the setup script should create a database called "testing" and a new user for authenticating to the test database, check with the Setup.js script to see the name of the user.
+
 ## Installation
 
 1. Database must be called "imageHost"

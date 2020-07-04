@@ -1,5 +1,5 @@
 const express = require("express");
-const db = require("./database");
+const db = require("./database/production");
 const imageRoutes = require("./routes/imageRoutes");
 const userRoutes = require("./routes/userRoutes");
 const chalk = require("chalk");
