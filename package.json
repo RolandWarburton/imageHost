@@ -11,7 +11,7 @@
 		"debug": "DEBUG=imageHost:* npm run monitor",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"setup": "node Setup.js",
-		"monitor": "nodemon server.js",
+		"monitor": "nodemon startServer.js",
 		"clean": "rm -f ./uploads/* && rm -f ./access.log"
 	},
 	"repository": {

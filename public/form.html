@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<form
+			action="http://192.168.0.100:2020/login"
+			id="myForm"
+			type="POST"
+			onsubmit="return foo(event)"
+		>
+			<input type="text" name="username" id="username" />
+			<input type="text" name="password" id="password" />
+			<button type="submit" id="submit">submit</button>
+		</form>
+
+		<script>
+			function foo(event) {
+				// event.preventDefault();
+				// event.submit();
+				// const form = document.querySelector("#myForm");
+				// alert(form.getResponses());
+			}
+		</script>
+	</body>
+</html>

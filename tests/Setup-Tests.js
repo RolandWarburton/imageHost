@@ -13,9 +13,7 @@ const FormData = require("form-data");
 require("dotenv").config();
 
 // databases
-const { db: testDB, connectToDB } = require("../database");
-connectToDB(process.env.DB_CONNECTION_TESTING);
-// const server = require("../server");
+const { db: testDB, connectToDB, disconnectFromDB } = require("../database");
 
 /** Return a promise that resolves to a user
  * @example addUser("roland", "rhinos", false)
@@ -84,67 +82,64 @@ const addImage = async (filepath, user_id) => {
 	});
 };
 
-const setupTests = () => {
-	// Tell the user if theres an issue with the connection
-	testDB.on(
-		"error",
-		console.error.bind(console, "MongoDB connection error:")
-	);
+const setupTests = async () => {
+	await connectToDB(process.env.DB_CONNECTION_TESTING);
 
 	// once connected try and find the AccountMaster account. If it doesnt exist create it
-	testDB.once("open", async () => {
-		// delete everything in the test users collection 🔥
-		await User.deleteMany({}, (err, result) => {
-			if (err) debug(err);
-			debug(`Deleting old users... 🔥\n${JSON.stringify(result)}`);
-		});
-
-		// delete everything in the image collection 🔥
-		await Image.deleteMany({}, (err, result) => {
-			if (err) debug(err);
-			debug(`Deleting old images... 🔥\n${JSON.stringify(result)}`);
-		});
-
-		// Create some test data
-		const users = [];
-		for (let i of Array(5).keys()) {
-			username = "user" + i;
-			password = "password" + i;
-			superuser = false;
-			users.push(addUser(username, password, superuser));
-		}
-		await Promise.all(users);
-
-		// create an account admin and sign a key for them to use for post requests
-		const accountMaster = await addUser("AccountMaster", "rhinos", true);
-		// const accountMasterToken = jwt.sign(
-		// 	{ _id: accountMaster._id },
-		// 	process.env.USER_KEY
-		// );
-
-		// get the ip and port for postImage()
-		const ip = await internalIp.v4();
-		const port = process.env.PORT || 2020;
-
-		// get filepaths for different filetypes to post
-		const png = path.resolve(__dirname, "testAssets", "png.png");
-		const webm = path.resolve(__dirname, "testAssets", "webm.webm");
-		const mp4 = path.resolve(__dirname, "testAssets", "mp4.mp4");
-
-		// post images to imageHost.imageHost
-		const images = [
-			addImage(png, await users[0]._id),
-			addImage(webm, await users[1]._id),
-			addImage(mp4, await users[2]._id),
-		];
-
-		// make sure all posts resolve
-		await Promise.all(images);
-
-		console.log(chalk.magenta("STOPPING"));
-
-		mongoose.disconnect();
+	// testDB.once("open", async () => {
+	// delete everything in the test users collection 🔥
+	await User.deleteMany({}, (err, result) => {
+		if (err) debug(err);
+		debug(`Deleting old users... 🔥\n${JSON.stringify(result)}`);
 	});
+
+	// delete everything in the image collection 🔥
+	await Image.deleteMany({}, (err, result) => {
+		if (err) debug(err);
+		debug(`Deleting old images... 🔥\n${JSON.stringify(result)}`);
+	});
+
+	// Create some test data
+	const users = [];
+	for (let i of Array(5).keys()) {
+		username = "user" + i;
+		password = "password" + i;
+		superuser = false;
+		users.push(addUser(username, password, superuser));
+	}
+	await Promise.all(users);
+
+	// create an account admin and sign a key for them to use for post requests
+	const accountMaster = await addUser("AccountMaster", "rhinos", true);
+	// const accountMasterToken = jwt.sign(
+	// 	{ _id: accountMaster._id },
+	// 	process.env.USER_KEY
+	// );
+
+	// get the ip and port for postImage()
+	const ip = await internalIp.v4();
+	const port = process.env.PORT || 2020;
+
+	// get filepaths for different filetypes to post
+	const png = path.resolve(__dirname, "testAssets", "png.png");
+	const webm = path.resolve(__dirname, "testAssets", "webm.webm");
+	const mp4 = path.resolve(__dirname, "testAssets", "mp4.mp4");
+
+	// post images to imageHost.imageHost
+	const images = [
+		addImage(png, await users[0]._id),
+		addImage(webm, await users[1]._id),
+		addImage(mp4, await users[2]._id),
+	];
+
+	// make sure all posts resolve
+	await Promise.all(images);
+
+	// mongoose.disconnect();
+	const success = await disconnectFromDB();
+	return success;
+	// await testDB.close();
+	// });
 };
 
 module.exports = setupTests();

@@ -10,8 +10,9 @@ require("dotenv");
 // const queryUser = require("queryUser");
 // const queryImageMeta = require("queryImageMeta");
 
-// import and start the server
-const server = require("../../server/testing");
+const db = require("../../database");
+const server = require("../../server");
+
 // server.start();
 // server.start();
 // start();
@@ -24,65 +25,34 @@ const server = require("../../server/testing");
 // 	stop();
 // });
 
-beforeAll(() => {
-	// do stuff
-	// start();
+beforeAll(async () => {
+	await db.connectToDB(process.env.DB_CONNECTION_TESTING);
+	await server.startServer();
 });
 
-afterAll(() => {
-	// disconnect gracefully from the testing db to prevent a warning
-	// mongoose.disconnect();
-	// stop the server to prevent the same warning
-	// server.stop();
+afterAll(async () => {
+	const quiet = true;
+	await server.stopServer(quiet);
+	await db.disconnectFromDB(true);
+});
+
+beforeEach(async () => {
+	// do some stuff
 });
 
 describe("Check API login endpoint", () => {
 	// const user = { username: "user_0", password: "password_0" };
 
-	test.skip("returns a user by username", async () => {
-		// const res = await request(start).post("/login").send({
-		// 	username: "user0",
-		// 	password: "password0",
-		// });
-		// console.log(res);
-		// expect(res.statusCode).toEqual(201);
-		// expect(res.body).toHaveProperty("post");
-		// ===========
-		// done();
-		// const fetchURL = "http://127.0.0.1:2020/login";
-		// const options = {
-		// 	method: "get",
-		// 	headers: {
-		// 		"Content-Type": "application/x-www-form-urlencoded",
-		// 	},
-		// 	body: {
-		// 		username: "user_0",
-		// 		password: "password_0",
-		// 	},
-		// };
-		// const body = {
-		// 	username: "user_0",
-		// 	password: "password_0",
-		// };
-		// const a = await fetch(fetchURL, {
-		// 	method: "POST",
-		// 	body: body,
-		// });
-		// console.log(a);
-		// .then((res) => {
-		// 	console.log(res);
-		// 	expect(res.success).toEqual(true);
-		// 	// done();
-		// })
-		// .catch((err) => {
-		// 	console.log(chalk.red(err));
-		// });
-		// console.log(response);
-		// expect(response.success).toBeDefined();
-		// expect(1).toBeDefined();
-		// .then((res) => res.json())
-		// .then((json) => {
-		// 	expect(json).toBeDefined();
-		// });
+	test("expect the user returned to be 200 OK", async () => {
+		const res = await request(server.app).post("/login").send({
+			username: "user0",
+			password: "password0",
+		});
+		console.log(res.body);
+		expect(res.statusCode).toEqual(200);
 	});
+
+	// test("login returns key", async () => {
+	// 	const res = await request(server.app).post
+	// })
 });

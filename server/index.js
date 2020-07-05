@@ -1,15 +1,16 @@
 const express = require("express");
 const imageRoutes = require("../routes/imageRoutes");
 const userRoutes = require("../routes/userRoutes");
+const debug = require("debug")("imageHost:server");
 const chalk = require("chalk");
 const version = require("../package").version;
 const fs = require("fs");
+const path = require("path");
 const util = require("util");
 // const internalIp = require("internal-ip");
 const morgan = require("morgan");
 // const { logger } = require("./logger");
 const { httpLogger } = require("../logger");
-const debug = require("debug")("imageHost:http"); // DEBUG=http npm run monitor
 
 const createDir = (path) => {
 	debug(`Creating directory ${path}`);
@@ -56,9 +57,9 @@ server.use("/", imageRoutes);
 server.use("/", userRoutes);
 
 // fallback
-server.get("*", (req, res) => {
-	res.status(200).json({ success: true, version: version, help: endpoints });
-});
+// server.get("/", (req, res) => {
+// 	res.status(200).json({ success: true, version: version, help: endpoints });
+// });
 
 // ===================== CONTROLLING THE SERVER =====================
 
@@ -67,7 +68,7 @@ server.get("*", (req, res) => {
  * server.start();
  */
 const start = () => {
-	console.log("trying to start the express server...");
+	debug("trying to start the express server...");
 
 	// return a promise that resolves to true or false depending if the server started successfully
 	return new Promise((resolve, reject) => {
@@ -78,7 +79,7 @@ const start = () => {
 		}
 	})
 		.then((success) => {
-			console.log(chalk.green("connected to the express server!"));
+			debug("connected to the express server!");
 			return true;
 		})
 		.catch((err) => {
@@ -91,8 +92,8 @@ const start = () => {
  * @example const server = require("./server");
  * server.app.stop()
  */
-const stop = () => {
-	console.log("trying to stop the express");
+const stop = (quiet) => {
+	debug("trying to stop the express");
 
 	return new Promise((resolve, reject) => {
 		const success = httpServer.close((err) => {
@@ -104,15 +105,15 @@ const stop = () => {
 		else reject(false);
 	})
 		.then((success) => {
-			console.log("stopped the server successfully!");
+			debug("stopped the server successfully!");
 		})
 		.catch((err) => {
 			console.log(chalk.red(err));
 		});
 
-	httpServer.close((err) => {
-		if (err) console.log(chalk.red(err));
-	});
+	// httpServer.close((err) => {
+	// 	if (err) console.log(chalk.red(err));
+	// });
 };
 
 module.exports = { app: server, startServer: start, stopServer: stop };
