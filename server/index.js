@@ -4,6 +4,7 @@ const userRoutes = require("../routes/userRoutes");
 const chalk = require("chalk");
 const version = require("../package").version;
 const fs = require("fs");
+const util = require("util");
 // const internalIp = require("internal-ip");
 const morgan = require("morgan");
 // const { logger } = require("./logger");
@@ -37,6 +38,10 @@ for (layer of imageRoutes.stack) {
 
 // start the server
 const server = express();
+
+// create a http server using express to allow use of the .close method from http
+const httpServer = require("http").createServer(server);
+
 const port = process.env.PORT || 2020;
 
 // * middleware
@@ -60,12 +65,26 @@ server.get("*", (req, res) => {
 /** Start the server
  * @example const server = require("./server")
  * server.start();
- * @param {string} message - what do you want to say when the server starts?
  */
-const start = (message) => {
-	server.listen(port, () => {
-		if (message) console.log(chalk.green(message));
-	});
+const start = () => {
+	console.log("trying to start the express server...");
+
+	// return a promise that resolves to true or false depending if the server started successfully
+	return new Promise((resolve, reject) => {
+		if (httpServer.listen(port)) {
+			resolve(true);
+		} else {
+			reject(false);
+		}
+	})
+		.then((success) => {
+			console.log(chalk.green("connected to the express server!"));
+			return true;
+		})
+		.catch((err) => {
+			console.log(chalk.red(err));
+			return false;
+		});
 };
 
 /** Stop the server
@@ -73,7 +92,27 @@ const start = (message) => {
  * server.app.stop()
  */
 const stop = () => {
-	server.close();
+	console.log("trying to stop the express");
+
+	return new Promise((resolve, reject) => {
+		const success = httpServer.close((err) => {
+			if (err) return false;
+			else return true;
+		});
+
+		if (success) resolve(true);
+		else reject(false);
+	})
+		.then((success) => {
+			console.log("stopped the server successfully!");
+		})
+		.catch((err) => {
+			console.log(chalk.red(err));
+		});
+
+	httpServer.close((err) => {
+		if (err) console.log(chalk.red(err));
+	});
 };
 
 module.exports = { app: server, startServer: start, stopServer: stop };

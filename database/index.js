@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const ora = require("ora");
+const util = require("util");
 const debug = require("debug")("imageHost:database");
 require("dotenv/config");
 
@@ -18,18 +19,15 @@ spinner.spinner = {
  * @param {string} url - url to connect to
  * @param {boolean} quiet - print messages or not
  */
-const connectToDB = (url, quiet) => {
-	// connect to the database
-	mongoose
-		.connect(url, {
-			useNewUrlParser: true,
-			useUnifiedTopology: true,
-		})
-		.catch((err) => {
-			console.log(err);
-		});
-
+const connectToDB = async (url, quiet) => {
+	const connectionSchema = {
+		useNewUrlParser: true,
+		useUnifiedTopology: true,
+	};
 	spinner.start();
+
+	const con = util.promisify(mongoose.connect);
+	return con(url, connectionSchema);
 };
 
 db.once("open", function () {

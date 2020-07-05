@@ -19,35 +19,29 @@ db.once("open", async () => {
 	const port = process.env.PORT || 2020;
 	server.startServer(`server is now running on http://www.${ip}:${port}!`);
 
-	queryUser("AccountMaster")
-		.then((user) => {
-			if (user) {
-				debug("AccountMaster exists");
-				return true;
-			} else {
-				debug("user does not exist");
-				return false;
-			}
-		})
-		.then((AccountMasterUserExists) => {
-			if (!AccountMasterUserExists) {
-				debug("creating AccountMaster account...");
-				const accountMaster = new User({
-					username: "AccountMaster",
-					password: "rhinos",
-					superUser: true,
-				});
-
-				// save the account into the database and close the connection
-				accountMaster.save().then(() => {
-					mongoose.disconnect();
-				});
-			} else {
-				debug("no new user needed, closing the connection");
-				mongoose.disconnect().then(() => {
-					debug("Closed the database connection");
-				});
-			}
-			return true;
+	const accountMaster = queryUser("username", "AccountMaster");
+	if (accountMaster) {
+		debug("AccountMaster exists");
+		return;
+	} else {
+		debug("creating AccountMaster account...");
+		const accountMaster = new User({
+			username: "AccountMaster",
+			password: "rhinos",
+			superUser: true,
 		});
+
+		// save the account into the database and close the connection
+		accountMaster.save().then(() => {
+			mongoose.disconnect();
+			return;
+		});
+	}
+
+	// nothing more to do
+	debug("no new user needed, closing the connection");
+	mongoose.disconnect().then(() => {
+		debug("Closed the database connection");
+		return;
+	});
 });
