@@ -1,4 +1,6 @@
 const chalk = require("chalk");
+const express = require("express");
+const path = require("path");
 const internalIp = require("internal-ip");
 require("dotenv");
 
@@ -22,6 +24,11 @@ const go = async () => {
 	await connectToDB(process.env.DB_CONNECTION);
 	await server.startServer();
 	console.log(await getMessage());
+
+	server.app.use(
+		"/static",
+		express.static(path.resolve(process.env.ROOT, "public"))
+	);
 };
 go();
 

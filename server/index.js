@@ -7,6 +7,7 @@ const version = require("../package").version;
 const fs = require("fs");
 const path = require("path");
 const util = require("util");
+const cors = require("cors");
 // const internalIp = require("internal-ip");
 const morgan = require("morgan");
 // const { logger } = require("./logger");
@@ -40,6 +41,8 @@ for (layer of imageRoutes.stack) {
 // start the server
 const server = express();
 
+server.use(cors());
+
 // create a http server using express to allow use of the .close method from http
 const httpServer = require("http").createServer(server);
 
@@ -57,9 +60,9 @@ server.use("/", imageRoutes);
 server.use("/", userRoutes);
 
 // fallback
-// server.get("/", (req, res) => {
-// 	res.status(200).json({ success: true, version: version, help: endpoints });
-// });
+server.get("/", (req, res) => {
+	res.status(200).json({ success: true, version: version, help: endpoints });
+});
 
 // ===================== CONTROLLING THE SERVER =====================
 

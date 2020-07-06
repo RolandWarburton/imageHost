@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<form id="myForm" type="POST" onsubmit="foo(event)">
+			<input type="text" name="username" id="username" />
+			<input type="text" name="password" id="password" />
+			<button type="submit" id="submit">submit</button>
+		</form>
+
+		<script>
+			function foo(event) {
+				event.preventDefault();
+				const form = document.querySelector("#myForm");
+
+				const myHeaders = new Headers();
+				myHeaders.append(
+					"Content-Type",
+					"application/x-www-form-urlencoded"
+				);
+
+				const urlencoded = new URLSearchParams();
+				urlencoded.append("username", "AccountMaster");
+				urlencoded.append("password", "rhinos");
+
+				const requestOptions = {
+					method: "POST",
+					headers: myHeaders,
+					body: urlencoded,
+					redirect: "follow",
+				};
+
+				fetch("http://192.168.0.100:2020/login", requestOptions)
+					.then((response) => response.text())
+					.then((result) => console.log(result))
+					.catch((error) => console.log("error", error));
+			}
+		</script>
+	</body>
+</html>
