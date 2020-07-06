@@ -3,6 +3,7 @@
 // const mongoose = require("mongoose");
 const fetch = require("node-fetch");
 const chalk = require("chalk");
+const jwt = require("jsonwebtoken");
 const request = require("supertest");
 require("dotenv");
 
@@ -52,6 +53,15 @@ describe("Check API login endpoint", () => {
 		expect(res.statusCode).toEqual(200);
 	});
 
+	test("expect the user returns the auth-token", async () => {
+		const res = await request(server.app).post("/login").send({
+			username: "user0",
+			password: "password0",
+		});
+		expect(res.body["auth-token"]).toBeDefined();
+	});
+
+	test.skip("check the auth token is correct");
 	// test("login returns key", async () => {
 	// 	const res = await request(server.app).post
 	// })
