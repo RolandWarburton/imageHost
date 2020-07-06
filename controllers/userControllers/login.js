@@ -43,7 +43,9 @@ const login = async (req, res) => {
 	res.header("auth-token", token);
 
 	// return 200 all good and attach the user and token
-	return res.status(200).json({ success: true, user: user, token: token });
+	return res
+		.status(200)
+		.json({ success: true, user: user, "auth-token": token });
 };
 
 module.exports = login;
