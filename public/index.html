@@ -35,8 +35,12 @@
 				};
 
 				fetch("http://192.168.0.100:2020/login", requestOptions)
-					.then((response) => response.text())
-					.then((result) => console.log(result))
+					.then((response) => response.json())
+					.then((result) => {
+						const myHeaders = new Headers();
+						myHeaders.append("auth-token", result["auth-token"]);
+						console.log("put the auth-token inside the header");
+					})
 					.catch((error) => console.log("error", error));
 			}
 		</script>

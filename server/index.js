@@ -5,6 +5,7 @@ const debug = require("debug")("imageHost:server");
 const chalk = require("chalk");
 const version = require("../package").version;
 const fs = require("fs");
+const cookieParser = require("cookie-parser");
 const path = require("path");
 const util = require("util");
 const cors = require("cors");
@@ -42,6 +43,8 @@ for (layer of imageRoutes.stack) {
 const server = express();
 
 server.use(cors());
+
+server.use(cookieParser());
 
 // create a http server using express to allow use of the .close method from http
 const httpServer = require("http").createServer(server);

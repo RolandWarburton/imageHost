@@ -39,8 +39,13 @@ const login = async (req, res) => {
 	const token = jwt.sign({ _id: user._id }, process.env.USER_KEY);
 
 	// put the signed token in the response header
+	// ! this is for debugging at the moment. should be removed later - Roland
 	debug("putting the auth-token into the res.header");
 	res.header("auth-token", token);
+
+	// put the token in a http cookie 🍪
+	debug("put auth-token in a res cookie");
+	res.cookie("auth-token", token);
 
 	// return 200 all good and attach the user and token
 	return res
