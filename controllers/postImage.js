@@ -52,10 +52,24 @@ const postImage = (req, res) => {
 	// the response object is changed when errors are encountered
 	let response = { success: true, http: 200, error: "" };
 
+	const files = [];
+
+	debug("creating new Image object");
 	const image = new Image();
 	// let postedImage = false;
 	const UUID = uuidv5(Math.random().toString(), uuidv5.URL);
 
+	// the content-type should be multipart/form-data
+	debug("checking the content-type headers are exist");
+	if (!req.headers["content-type"]) {
+		response.success = false;
+		response.http = errors.no_file.http;
+		response.error = errors.no_file.error;
+
+		return res
+			.status(response.http)
+			.json({ success: response.success, error: response.error });
+	}
 	// 1GB filesize limit
 	const busboy = new Busboy({
 		headers: req.headers,
@@ -64,9 +78,12 @@ const postImage = (req, res) => {
 			fileSize: 1000 * 1024 * 1024,
 		},
 	});
+	debug("waiting");
 
 	// * ============================== On File ==============================
 	busboy.on("file", (fieldname, file, filename, encoding, mimetype) => {
+		debug("pushing file");
+		files.push(file);
 		// get details about the file
 		const { saveFilepath, fileExtension } = getFilepathDetails(
 			mimetype,
@@ -122,6 +139,7 @@ const postImage = (req, res) => {
 			encoding,
 			mimetype
 		) => {
+			debug("pushing field");
 			// stick this field onto the image object
 			image[fieldname] = val;
 		}
