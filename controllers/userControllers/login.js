@@ -45,7 +45,7 @@ const login = async (req, res) => {
 
 	// put the token in a http cookie 🍪
 	debug("put auth-token in a res cookie");
-	res.cookie("auth-token", token, { httpOnly: true, secure: true });
+	res.cookie("auth-token", token, { sameSite: true });
 
 	// return 200 all good and attach the user and token
 	return res

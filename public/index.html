@@ -40,6 +40,7 @@
 						const myHeaders = new Headers();
 						myHeaders.append("auth-token", result["auth-token"]);
 						console.log("put the auth-token inside the header");
+						window.location.href = "/cookies";
 					})
 					.catch((error) => console.log("error", error));
 			}

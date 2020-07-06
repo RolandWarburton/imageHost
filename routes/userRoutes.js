@@ -17,7 +17,13 @@ router.post("/createUser", [urlencodedParser, authenticate], createUser);
 router.post("/login", [urlencodedParser], login);
 
 router.get("/cookies", (req, res) => {
-	res.send(req.cookies["auth-token"]);
+	res.send(req.cookies);
+});
+
+// clear the cookies
+router.get("/logout", (req, res) => {
+	res.clearCookie("auth-token");
+	res.send("user logout successfully");
 });
 
 module.exports = router;
