@@ -14,6 +14,6 @@ router.use(bodyParser.json());
 // pass the body-parser middleware to this route to give it access to req.body.username/password
 router.post("/createUser", [urlencodedParser, authenticate], createUser);
 
-router.get("/login", urlencodedParser, login);
+router.post("/login", [urlencodedParser], login);
 
 module.exports = router;
