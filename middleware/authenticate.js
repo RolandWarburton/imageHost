@@ -6,7 +6,7 @@ const authenticate = (req, res, next) => {
 	debug(`running authenticate middleware`);
 
 	// check the auth-token given to the user after they log in
-	const token = req.header("auth-token");
+	const token = req.cookies["auth-token"];
 
 	if (!token) {
 		debug(`Token is empty. Returning 401`);
