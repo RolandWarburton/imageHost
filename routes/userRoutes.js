@@ -23,6 +23,7 @@ router.get("/cookies", (req, res) => {
 // clear the cookies
 router.get("/logout", (req, res) => {
 	res.clearCookie("auth-token");
+	res.clearCookie("user");
 	res.send("user logout successfully");
 });
 

@@ -24,7 +24,7 @@ const authenticate = (req, res, next) => {
 
 		// set the user to verified. Eg. verified: {_id: "123abc", iat: 12345678}
 		debug(`putting the user ${verified._id.substring(0, 6)} into req.user`);
-		req.user = verified;
+		res.cookie("user", verified, { sameSite: true });
 		next();
 	} catch (err) {
 		debug(`Token exists but is invalid. Returning 400`);
