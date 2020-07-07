@@ -184,6 +184,9 @@ const postImage = (req, res) => {
 		// set the id
 		image._id = UUID;
 
+		// set the user
+		image.user_id = req.cookies.user;
+
 		image.save().then((document) => {
 			debug("saved image object to database");
 			return res

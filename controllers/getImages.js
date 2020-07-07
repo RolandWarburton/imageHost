@@ -53,9 +53,13 @@ const getImages = async (req, res) => {
 	const queries = req.query;
 	debug(`Received queries ${JSON.stringify(queries)}`);
 
+	// attach the user id for filtering just the users pictures
+	filters.user_id = req.cookies.user;
+
 	// Internally controlls how many values to skip to give the illusion of pages
 	const skipCount = getSkipCount(queries.page, queries.limit);
 
+	// ================= Queries ================================
 	// ?limit
 	// how many items per page
 	const limit = getLimit(queries.limit);
@@ -64,13 +68,12 @@ const getImages = async (req, res) => {
 	// return just images with this tag. may be an array if theres multiple images
 	const tags = queries.tag;
 
+	// ================= Attach tags is parsed =================
 	// if there are tags, append them to the query filters
 	if (tags) filters.tags = { $in: tags };
 
-	const tagTest = ["a", "b", "c"];
-	// debug(tag);
+	// ================= Run the query =========================
 	try {
-		// get all the images
 		const images = await Image.find(filters, "meta.uploadDate id tags", {
 			sort: "meta.uploadDate",
 			skip: skipCount,

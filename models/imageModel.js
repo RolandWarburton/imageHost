@@ -48,7 +48,7 @@ const schema = {
 		require: true,
 	},
 	user_id: {
-		type: Object,
+		type: String,
 		require: true,
 	},
 };
