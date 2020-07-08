@@ -17,22 +17,28 @@ connectToDB(process.env.DB_CONNECTION);
 db.once("open", async () => {
 	const ip = "localhost";
 	const port = process.env.PORT || 2020;
-	server.startServer(`server is now running on http://www.${ip}:${port}!`);
+	await server.startServer(`server is now running on http://www.${ip}:${port}!`);
 
-	const accountMaster = queryUser("username", "AccountMaster");
-	if (accountMaster) {
-		debug("AccountMaster exists");
+	const username = process.env.ACCOUNT_MASTER_USERNAME;
+	const password = process.env.ACCOUNT_MASTER_PASSWORD;
+
+	const queriedUser = await queryUser("username", username);
+
+	if (queriedUser) {
+		debug(`Account with the name ${username} already exists.`);
 		return;
+
 	} else {
-		debug("creating AccountMaster account...");
-		const accountMaster = new User({
-			username: "AccountMaster",
-			password: "rhinos",
+		debug(`Creating AccountMaster (${username}) account...`);
+		
+		const newUser = new User({
+			username: username,
+			password: password,
 			superUser: true,
 		});
 
 		// save the account into the database and close the connection
-		accountMaster.save().then(() => {
+		await newUser.save().then(() => {
 			mongoose.disconnect();
 			return;
 		});
@@ -44,4 +50,5 @@ db.once("open", async () => {
 		debug("Closed the database connection");
 		return;
 	});
+	
 });
