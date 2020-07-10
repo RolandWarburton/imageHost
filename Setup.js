@@ -9,11 +9,9 @@ const queryUser = require("./dbQueries/queryUser");
 // get the db
 const { db, connectToDB, disconnectFromDB } = require("./database");
 
-connectToDB(process.env.DB_CONNECTION);
-
-db.once("open", async () => {
-	const ip = "localhost";
-	const port = process.env.PORT || 2020;
+const setup = async () => {
+	// connect to database 🗃
+	await connectToDB(process.env.DB_CONNECTION);
 
 	const username = process.env.ACCOUNT_MASTER_USERNAME;
 	const password = process.env.ACCOUNT_MASTER_PASSWORD;
@@ -30,13 +28,14 @@ db.once("open", async () => {
 		});
 
 		await newUser
-		.save()
-		.then((user) => {
-			debug(`Successfully created new master user: ${user.username}`);
-		}).catch((err) =>{
-			console.log(chalk.red(err));
-		});
-	}else{
+			.save()
+			.then((user) => {
+				debug(`Successfully created new master user: ${user.username}`);
+			})
+			.catch((err) => {
+				console.log(chalk.red(err));
+			});
+	} else {
 		debug(`Account already exists (${queriedUser.username})`);
 	}
 
@@ -44,4 +43,6 @@ db.once("open", async () => {
 	disconnectFromDB().then(() => {
 		debug("Successfully closed the database connection.");
 	});
-});
+};
+
+module.exports = setup();
