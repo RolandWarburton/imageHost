@@ -6,28 +6,10 @@ const { logger } = require("../../logger");
 const debug = require("debug")("imageHost:controllers");
 
 const login = async (req, res) => {
-
-	let token = req.header("auth-token");
-	if(token){
-		try{
-			// decode the token and check it with jwt
-			const verified = jwt.verify(token, process.env.USER_KEY);
-			debug(`Token verified as genuine: ${token}`);
-
-			// is a 208 response the most appropriate for this request?
-			return res.status(208).json({
-				success: true,
-				"auth-token": token
-			});
-		}catch(err){
-			debug(`Token exists but is invalid. Continuing.`);
-		}
-	}
-
 	// get the username and password from the body (x-www-form-urlencoded)
 	const username = req.body.username;
 	const password = req.body.password;
-	
+
 	// Check if the new users details are correct
 	const { isVaidUser, error } = validateUser(username, password);
 	if (!isVaidUser) {
