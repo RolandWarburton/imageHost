@@ -14,7 +14,7 @@ const authenticate = (req, res, next) => {
 			.status(401)
 			.json({ success: false, error: "Unauthorized to do this D:" });
 	} else {
-		debug(`Got token from header: ${token.substring(0, 6)}...`);
+		debug(`Got token from cookies: ${token.substring(0, 6)}...`);
 	}
 
 	try {
