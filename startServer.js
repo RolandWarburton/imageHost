@@ -26,7 +26,7 @@ const go = async () => {
 	console.log(await getMessage());
 
 	server.app.use(
-		"/static",
+		"/login",
 		express.static(path.resolve(process.env.ROOT, "public"))
 	);
 };
