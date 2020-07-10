@@ -120,8 +120,17 @@ const postImage = (req, res) => {
 		image.meta.mime = mimetype;
 
 		f.on("finish", () => {
+			// if file was saved
 			if (response.success) {
-				debug("saved image to filesystem");
+				// try and read the filesize
+				try {
+					image.meta.size = fs.statSync(image.path).size;
+				} catch (err) {
+					debug("ERROR: Failed to get the file size");
+				} finally {
+					// finally debug the console that the image was saved
+					debug("saved image to filesystem");
+				}
 			} else {
 				debug("closed the file stream");
 			}

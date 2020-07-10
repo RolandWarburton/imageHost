@@ -31,6 +31,10 @@ const schema = {
 			type: String,
 			require: false,
 		},
+		size: {
+			type: Number,
+			reqire: false,
+		},
 		dimensions: {
 			require: false,
 			width: {
