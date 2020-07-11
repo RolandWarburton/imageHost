@@ -195,7 +195,7 @@ const postImage = (req, res) => {
 		image._id = UUID;
 
 		// set the user
-		image.user_id = req.cookies.user;
+		image.user_id = res.user._id;
 
 		const encrypted = req.secure ? "https" : "http";
 		const url = `${encrypted}://${req.headers.host}/image/${image._id}`;

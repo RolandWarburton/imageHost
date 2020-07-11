@@ -23,10 +23,9 @@ const authenticate = (req, res, next) => {
 
 	try {
 		// decode the token and check it with jwt
-		const verified = jwt.verify(token, process.env.USER_KEY);
-		debug(`Token verified as user: ${JSON.stringify(verified)}`);
-
-		res["auth-token"] = verified;
+		const user = jwt.verify(token, process.env.USER_KEY);
+		debug(`Token verified as user: ${JSON.stringify(user)}`);
+		res.user = user;
 
 		next();
 	} catch (err) {

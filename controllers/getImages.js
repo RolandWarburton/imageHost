@@ -1,6 +1,7 @@
 const { Image } = require("../models/imageModel");
 const mongoose = require("mongoose");
 const debug = require("debug")("imageHost:controllers");
+const queryUser = require("../dbQueries/queryUser");
 require("dotenv").config();
 
 // =============================================
@@ -9,6 +10,7 @@ require("dotenv").config();
 // ?page=N - The page number to go to
 // ?per_page=N - The number of items per page
 // ?tag=String
+// ?include_all_users=true
 
 /** Return the number of items that need to be skipped
  * to get to page number
@@ -24,7 +26,7 @@ const getSkipCount = (page, per_page) => {
 		per_page && per_page >= 10 && per_page <= 100 ? per_page : 20;
 
 	//get the page number and convert it to a number
-	const pageNumber = Number(page);
+	const pageNumber = Number(page) || 0;
 
 	// Internally controlls how many values to skip to give the illusion of pages
 	skipCount = pageNumber ? numberOfItemsPerPage * pageNumber : 0;
@@ -36,7 +38,7 @@ const getSkipCount = (page, per_page) => {
 	return skipCount;
 };
 
-const getper_page = (per_page) => {
+const getPerPage = (per_page) => {
 	per_page = Number(per_page);
 	if (per_page <= 20) {
 		return per_page;
@@ -54,9 +56,12 @@ const getImages = async (req, res) => {
 	debug(`Received queries ${JSON.stringify(queries)}`);
 
 	// attach the user id for filtering just the users pictures
-	debug(`Verified deets: ${JSON.stringify(res["auth-token"]._id)}`);
+	debug(`Verified deets: ${JSON.stringify(res.user._id)}`);
 
-	filters.user_id = res["auth-token"]._id;
+	filters.user_id = res.user._id;
+
+	// check if the authenticated user is a superUser
+	await queryUser("_id", res.user._id);
 
 	// Internally controlls how many values to skip to give the illusion of pages
 	const skipCount = getSkipCount(queries.page, queries.per_page);
@@ -64,7 +69,7 @@ const getImages = async (req, res) => {
 	// ================= Queries ================================
 	// ?per_page
 	// how many items per page
-	const per_page = getper_page(queries.per_page);
+	const per_page = getPerPage(queries.per_page);
 
 	// ?tags
 	// return just images with this tag. may be an array if theres multiple images
@@ -74,6 +79,8 @@ const getImages = async (req, res) => {
 	// if there are tags, append them to the query filters
 	if (tags) filters.tags = { $in: tags };
 
+	debug(`filters: ${JSON.stringify(filters)}`);
+
 	// ================= Run the query =========================
 	try {
 		const images = await Image.find(filters, "meta.uploadDate id tags", {
@@ -81,6 +88,8 @@ const getImages = async (req, res) => {
 			skip: skipCount,
 			limit: per_page,
 		});
+
+		debug(skipCount);
 
 		if (!images.length) {
 			return res.status(404).json({
