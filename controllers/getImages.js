@@ -7,21 +7,21 @@ require("dotenv").config();
 // =============== Valid Queries ===============
 // =============================================
 // ?page=N - The page number to go to
-// ?limit=N - The number of items per page
+// ?per_page=N - The number of items per page
 // ?tag=String
 
 /** Return the number of items that need to be skipped
  * to get to page number
  * @param {number} page - The queries.page value (?page=N)
- * @param {number} limit - The queries.limit value (?limit=N)
+ * @param {number} per_page - The queries.per_page value (?per_page=N)
  */
-const getSkipCount = (page, limit) => {
-	// get the limit query and convert it to a number to set the numberOfItemsPerPage
-	limit = Number(limit);
+const getSkipCount = (page, per_page) => {
+	// get the per_page query and convert it to a number to set the numberOfItemsPerPage
+	per_page = Number(per_page);
 
-	// Set the number of items per page to the ?limit=n if its between 10 and 100
+	// Set the number of items per page to the ?per_page=n if its between 10 and 100
 	const numberOfItemsPerPage =
-		limit && limit >= 10 && limit <= 100 ? limit : 20;
+		per_page && per_page >= 10 && per_page <= 100 ? per_page : 20;
 
 	//get the page number and convert it to a number
 	const pageNumber = Number(page);
@@ -36,10 +36,10 @@ const getSkipCount = (page, limit) => {
 	return skipCount;
 };
 
-const getLimit = (limit) => {
-	limit = Number(limit);
-	if (limit <= 20) {
-		return limit;
+const getper_page = (per_page) => {
+	per_page = Number(per_page);
+	if (per_page <= 20) {
+		return per_page;
 	} else {
 		return 20;
 	}
@@ -57,12 +57,12 @@ const getImages = async (req, res) => {
 	filters.user_id = req.cookies.user;
 
 	// Internally controlls how many values to skip to give the illusion of pages
-	const skipCount = getSkipCount(queries.page, queries.limit);
+	const skipCount = getSkipCount(queries.page, queries.per_page);
 
 	// ================= Queries ================================
-	// ?limit
+	// ?per_page
 	// how many items per page
-	const limit = getLimit(queries.limit);
+	const per_page = getper_page(queries.per_page);
 
 	// ?tags
 	// return just images with this tag. may be an array if theres multiple images
@@ -77,7 +77,7 @@ const getImages = async (req, res) => {
 		const images = await Image.find(filters, "meta.uploadDate id tags", {
 			sort: "meta.uploadDate",
 			skip: skipCount,
-			limit: limit,
+			limit: per_page,
 		});
 
 		if (!images.length) {
