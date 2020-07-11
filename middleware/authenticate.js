@@ -6,7 +6,7 @@ const authenticate = (req, res, next) => {
 	debug(`running authenticate middleware`);
 
 	// check the auth-token given to the user after they log in
-	const token = req.cookies["auth-token"];
+	const token = req.cookies["auth-token"] || req.headers["auth-token"];
 
 	if (!token) {
 		debug(`Token is empty. Returning 401`);
@@ -22,7 +22,7 @@ const authenticate = (req, res, next) => {
 		const verified = jwt.verify(token, process.env.USER_KEY);
 		debug(`Token verified as user: ${JSON.stringify(verified)}`);
 
-		res.auth_token = verified;
+		res["auth-token"] = verified;
 
 		next();
 	} catch (err) {
