@@ -33,7 +33,7 @@ const login = async (req, res) => {
 			error: `Wrong password for ${username}`,
 		});
 	}
-
+	
 	// sign a token for the user
 	debug("Signing a new token for the user");
 	token = jwt.sign({ _id: user._id }, process.env.USER_KEY);
@@ -41,8 +41,6 @@ const login = async (req, res) => {
 	// put the token in a http cookie 🍪
 	debug("put auth-token in a res cookie");
 	res.cookie("auth-token", token, { sameSite: true });
-
-	res.cookie("user", user._id, { sameSite: true });
 
 	// return 200 all good and attach the user and token
 	return res
