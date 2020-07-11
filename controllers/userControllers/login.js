@@ -33,7 +33,7 @@ const login = async (req, res) => {
 			error: `Wrong password for ${username}`,
 		});
 	}
-	
+
 	// sign a token for the user
 	debug("Signing a new token for the user");
 	token = jwt.sign({ _id: user._id }, process.env.USER_KEY);

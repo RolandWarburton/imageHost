@@ -22,7 +22,7 @@ const authenticate = (req, res, next) => {
 		const verified = jwt.verify(token, process.env.USER_KEY);
 		debug(`Token verified as user: ${JSON.stringify(verified)}`);
 
-		res.token = verified;
+		res.auth_token = verified;
 
 		next();
 	} catch (err) {

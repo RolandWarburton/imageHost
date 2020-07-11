@@ -120,6 +120,7 @@ const postImage = (req, res) => {
 		image.meta.mime = mimetype;
 
 		f.on("finish", () => {
+			debug("file finished saving...");
 			// if file was saved
 			if (response.success) {
 				// try and read the filesize

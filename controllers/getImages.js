@@ -54,11 +54,9 @@ const getImages = async (req, res) => {
 	debug(`Received queries ${JSON.stringify(queries)}`);
 
 	// attach the user id for filtering just the users pictures
-	debug(`User request details: ${req.cookies.user}`);
+	debug(`Verified deets: ${JSON.stringify(res.auth_token._id)}`);
 
-	debug(`Verified deets: ${JSON.stringify(res.token)}`);
-	
-	filters.user_id = req.cookies.user;
+	filters.user_id = res.auth_token._id;
 
 	// Internally controlls how many values to skip to give the illusion of pages
 	const skipCount = getSkipCount(queries.page, queries.limit);
