@@ -120,6 +120,7 @@ const postImage = (req, res) => {
 		image.meta.mime = mimetype;
 
 		f.on("finish", () => {
+			debug("file finished saving...");
 			// if file was saved
 			if (response.success) {
 				// try and read the filesize
@@ -196,11 +197,14 @@ const postImage = (req, res) => {
 		// set the user
 		image.user_id = req.cookies.user;
 
+		const encrypted = req.secure ? "https" : "http";
+		const url = `${encrypted}://${req.headers.host}/image/${image._id}`;
+
 		image.save().then((document) => {
 			debug("saved image object to database");
 			return res
 				.status(response.http)
-				.json({ success: response.success, data: image });
+				.json({ success: response.success, data: image, url: url });
 		});
 	});
 

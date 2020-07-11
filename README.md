@@ -14,11 +14,35 @@ Jimuskin - james_boyd@jimusk.in
 Make sure to include a `.env` file on the root of the project containing.
 
 ```none
+# Connection to your production database
 DB_CONNECTION=mongodb://username:password@127.0.0.1:27017/databaseName
+
+# Connection to your testing database. Only needed for testing
+DB_CONNECTION_TESTING=mongodb://username:password@localhost:27017/testing?authSource=testing
+
+# SuperUser account for setting up
+ACCOUNT_MASTER_USERNAME=AccountMaster
+ACCOUNT_MASTER_PASSWORD=password
+
+# Nodes env
 NODE_ENV=development
+
+# Used to encrypt/decrypt JWT
 USER_KEY=123456
+
+# Where to put uploaded media
 UPLOAD_DIRECTORY_LOCATION=./uploads
+
+# The port to run on
 PORT=2020
+
+# Where is your project located
+ROOT=/home/meMyself/imageHost
+
+# Allow fallback to a req.header.auth-token. Otherwise a cookie from /login is required
+# Change to true if you are using clients like sharex to post images from
+ALLOW_HEADER_TOKEN=true
+
 ```
 
 ### Running locally with authentication
