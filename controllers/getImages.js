@@ -11,6 +11,17 @@ require("dotenv").config();
 // ?per_page=N - The number of items per page
 // ?tag=String
 // ?include_all_users=true
+// ?sort=Number
+// ?user=String
+
+sortKeys = {
+	1: { "meta.uploadDate": -1 }, // Upload Date Ascending (newest first)
+	2: { "meta.uploadDate": 1 }, // Upload Date Descending (oldest first)
+	3: { "meta.size": -1 }, // File Size Descending (biggest first)
+	4: { "meta.size": 1 }, // FIle Size Ascending (smallest first)
+	5: { "meta.dimensions.pixels": -1 }, // Area of width * height Descending (biggest first)
+	6: { "meta.dimensions.pixels": 1 }, // Area of width * height Ascending (smallest first)
+};
 
 /** Return the number of items that need to be skipped
  * to get to page number
@@ -23,7 +34,7 @@ const getSkipCount = (page, per_page) => {
 
 	// Set the number of items per page to the ?per_page=n if its between 10 and 100
 	const numberOfItemsPerPage =
-		per_page && per_page >= 10 && per_page <= 100 ? per_page : 20;
+		per_page && per_page >= 1 && per_page <= 100 ? per_page : 100;
 
 	//get the page number and convert it to a number
 	const pageNumber = Number(page) || 0;
@@ -47,7 +58,9 @@ const getPerPage = (per_page) => {
 	}
 };
 
+// * ================================
 // * get all images
+// * ================================
 const getImages = async (req, res) => {
 	debug("Running getImages...");
 
@@ -58,10 +71,18 @@ const getImages = async (req, res) => {
 	// attach the user id for filtering just the users pictures
 	debug(`Verified deets: ${JSON.stringify(res.user._id)}`);
 
-	filters.user_id = res.user._id;
+	// get the user details
+	const user = await queryUser("_id", res.user._id);
+	const isSuperUser = await user.superUser;
 
+	filters.user_id = user._id;
 	// check if the authenticated user is a superUser
-	await queryUser("_id", res.user._id);
+	// if ?include_all_users is passed then all users pictures are shown
+	if (isSuperUser && queries.include_all_users === "") {
+		// change the user_id filter to undefiend for the mongodb query
+		// this will result in ALL users images being shown
+		filters.user_id = queries.user || undefined;
+	}
 
 	// Internally controlls how many values to skip to give the illusion of pages
 	const skipCount = getSkipCount(queries.page, queries.per_page);
@@ -83,13 +104,11 @@ const getImages = async (req, res) => {
 
 	// ================= Run the query =========================
 	try {
-		const images = await Image.find(filters, "meta.uploadDate id tags", {
-			sort: "meta.uploadDate",
+		const images = await Image.find(filters, "-path", {
+			sort: sortKeys[queries.sort],
 			skip: skipCount,
 			limit: per_page,
 		});
-
-		debug(skipCount);
 
 		if (!images.length) {
 			return res.status(404).json({

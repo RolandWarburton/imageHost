@@ -180,6 +180,7 @@ const postImage = (req, res) => {
 				image.meta.dimensions = {
 					width: dim.width,
 					height: dim.height,
+					pixels: dim.width * dim.height,
 				};
 			} catch (err) {
 				debug(err);

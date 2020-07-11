@@ -45,6 +45,10 @@ const schema = {
 				type: Number,
 				require: false,
 			},
+			pixels: {
+				type: Number,
+				require: false,
+			},
 		},
 	},
 	_id: {
