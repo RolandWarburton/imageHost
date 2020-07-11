@@ -197,11 +197,14 @@ const postImage = (req, res) => {
 		// set the user
 		image.user_id = req.cookies.user;
 
+		const encrypted = req.secure ? "https" : "http";
+		const url = `${encrypted}://${req.headers.host}/image/${image._id}`;
+
 		image.save().then((document) => {
 			debug("saved image object to database");
 			return res
 				.status(response.http)
-				.json({ success: response.success, data: image });
+				.json({ success: response.success, data: image, url: url });
 		});
 	});
 
