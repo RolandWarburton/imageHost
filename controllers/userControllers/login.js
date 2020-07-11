@@ -42,8 +42,6 @@ const login = async (req, res) => {
 	debug("put auth-token in a res cookie");
 	res.cookie("auth-token", token, { sameSite: true });
 
-	res.cookie("user", user._id, { sameSite: true });
-
 	// return 200 all good and attach the user and token
 	return res
 		.status(200)
