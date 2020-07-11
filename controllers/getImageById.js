@@ -2,14 +2,22 @@ const { Image } = require("../models/imageModel");
 const fs = require("fs");
 const debug = require("debug")("imageHost:controllers");
 const path = require("path");
+const queryImageMeta = require("../dbQueries/queryImageMeta");
 require("dotenv").config();
 
 const imageFiletypes = ["gif", "ico", "bmp", "jpeg", "png", "svg"];
 const mediaFiletypes = ["mp4", "webm"];
 
-const getImageById = (req, res) => {
+const getImageById = async (req, res) => {
 	debug("Running getImageById...");
 	res.setHeader("accept-ranges", "bytes");
+
+	const image = await queryImageMeta(req.params.id);
+
+	if (!image) {
+		// 404
+		res.status(404).json({ success: false, error: "image not found" });
+	}
 
 	Image.find({ _id: req.params.id }, "path")
 		.cursor()
