@@ -6,7 +6,11 @@ const authenticate = (req, res, next) => {
 	debug(`running authenticate middleware`);
 
 	// check the auth-token given to the user after they log in
-	const token = req.cookies["auth-token"] || req.headers["auth-token"];
+	// if the token ALLOW_HEADER_TOKEN is set to true then use the req.headers.auth-token as a fallback
+	const token =
+		process.env.ALLOW_HEADER_TOKEN == "true"
+			? req.cookies["auth-token"] || req.headers["auth-token"]
+			: req.cookies["auth-token"];
 
 	if (!token) {
 		debug(`Token is empty. Returning 401`);
