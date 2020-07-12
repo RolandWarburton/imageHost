@@ -14,6 +14,12 @@ require("dotenv").config();
 const imageFiletypes = ["gif", "ico", "bmp", "jpeg", "png", "svg"];
 const mediaFiletypes = ["mp4", "webm"];
 
+/** Constructs a file path based on the specified UUID 
+ * and mimetype.
+ * @param {*} mimetype - The extension type of the file.
+ * @param {*} uuid - The file's unique ID.
+ * @returns A new file path.
+ */
 const getFilepathDetails = (mimetype, uuid) => {
 	// make a random filename
 	const filehash = uuid;
@@ -36,6 +42,10 @@ const getFilepathDetails = (mimetype, uuid) => {
 
 const getdim = util.promisify(sizeOf);
 
+/** The controller which posts an image.
+ * @param {*} req - The request passed in from the routes.
+ * @param {*} res - The response returned.
+ */
 const postImage = (req, res) => {
 	debug("Running postImage...");
 

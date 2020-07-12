@@ -3,7 +3,10 @@ const getImageMetaQuery = require("../dbQueries/queryImageMeta");
 const debug = require("debug")("imageHost:controllers");
 require("dotenv").config();
 
-// * get a single image
+/** Grabs the metadata of an image based on its UUID.
+ * @param {*} req - The request passed in from the routes.
+ * @param {*} res - The response returned.
+ */
 const getImageMeta = (req, res) => {
 	debug("Running getImageMeta...");
 

@@ -8,6 +8,10 @@ require("dotenv").config();
 const imageFiletypes = ["gif", "ico", "bmp", "jpeg", "png", "svg"];
 const mediaFiletypes = ["mp4", "webm"];
 
+/** Gets an image based on the UUID in the request.
+ * @param {*} req - The request passed in from the routes.
+ * @param {*} res - The response returned.
+ */
 const getImageById = async (req, res) => {
 	debug("Running getImageById...");
 	res.setHeader("accept-ranges", "bytes");

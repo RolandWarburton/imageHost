@@ -14,19 +14,29 @@ require("dotenv").config();
 // ?sort=Number
 // ?user=String
 
+/** Map of available sorts when ?sort=N is passed as a query
+ * 
+ * 1: Upload Date Ascending (Newest first)
+ * 2: Upload Date Descending (Oldest first)
+ * 3: File Size Descending (Biggest first)
+ * 4: File Size Ascending (Smallest first)
+ * 5: Area of pixels Descending (Biggest first)
+ * 6: Area of pixels Ascending (Smallest first)
+ */
 sortKeys = {
-	1: { "meta.uploadDate": -1 }, // Upload Date Ascending (newest first)
-	2: { "meta.uploadDate": 1 }, // Upload Date Descending (oldest first)
-	3: { "meta.size": -1 }, // File Size Descending (biggest first)
-	4: { "meta.size": 1 }, // FIle Size Ascending (smallest first)
-	5: { "meta.dimensions.pixels": -1 }, // Area of width * height Descending (biggest first)
-	6: { "meta.dimensions.pixels": 1 }, // Area of width * height Ascending (smallest first)
+	1: { "meta.uploadDate": -1 },
+	2: { "meta.uploadDate": 1 },
+	3: { "meta.size": -1 },
+	4: { "meta.size": 1 },
+	5: { "meta.dimensions.pixels": -1 },
+	6: { "meta.dimensions.pixels": 1 },
 };
 
 /** Return the number of items that need to be skipped
  * to get to page number
  * @param {number} page - The queries.page value (?page=N)
  * @param {number} per_page - The queries.per_page value (?per_page=N)
+ * @returns The number of images to be skipped.
  */
 const getSkipCount = (page, per_page) => {
 	// get the per_page query and convert it to a number to set the numberOfItemsPerPage
@@ -49,6 +59,11 @@ const getSkipCount = (page, per_page) => {
 	return skipCount;
 };
 
+/** Sanitizes the per_page query to return the number of items available per page, 
+ * or the maximum number of items which can be returned on a page (Capped at 20) 
+ * @param {number} per_page - The number of items available per page
+ * @returns The number of items available per page
+ */
 const getPerPage = (per_page) => {
 	per_page = Number(per_page);
 	if (per_page <= 20) {
@@ -58,9 +73,11 @@ const getPerPage = (per_page) => {
 	}
 };
 
-// * ================================
-// * get all images
-// * ================================
+/** The controller which returns all images.
+ * 
+ * @param {*} req - The request passed in from the routes.
+ * @param {*} res - The response returned.
+ */
 const getImages = async (req, res) => {
 	debug("Running getImages...");
 
