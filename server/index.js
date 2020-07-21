@@ -62,7 +62,11 @@ server.use("/", userRoutes);
 
 // fallback
 server.get("/", (req, res) => {
-	res.status(200).json({ success: true, version: version, help: endpoints });
+	res.status(200).json({
+		success: true,
+		version: version,
+		commands: endpoints,
+	});
 });
 
 // ===================== CONTROLLING THE SERVER =====================
