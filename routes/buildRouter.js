@@ -1,6 +1,6 @@
 /**
- *
- * @param {Router} router - Express router
+ * Appends routes to the router object
+ * @param {Router} router - Express router object
  * @param {Array} routes - An array of routes
  */
 const buildRouter = (router, routes) => {
