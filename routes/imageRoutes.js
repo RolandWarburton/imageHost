@@ -111,6 +111,18 @@ const routes = [
 	},
 ];
 
+// show the help json when the image route is hit
+// remove the middleware
+router.get("/", (req, res) => {
+	res.status(200).json({
+		success: true,
+		commands: routes.filter((route) => {
+			delete route.middleware;
+			return route;
+		}),
+	});
+});
+
 // build the router!
 buildRouter(router, routes);
 

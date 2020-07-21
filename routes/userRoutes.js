@@ -60,6 +60,18 @@ const routes = [
 
 buildRouter(router, routes);
 
+// show the help json when the users route is hit
+// remove the middleware
+router.get("/", (req, res) => {
+	res.status(200).json({
+		success: true,
+		commands: routes.filter((route) => {
+			delete route.middleware;
+			return route;
+		}),
+	});
+});
+
 // ! debug route to check the cookie
 router.get("/cookies", (req, res) => {
 	res.send(req.cookies);

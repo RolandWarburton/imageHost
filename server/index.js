@@ -28,15 +28,6 @@ const createDir = (path) => {
 createDir("./uploads");
 createDir("./logs");
 
-// populate endpoints [] with some helpful info
-const endpoints = [];
-for (let layer of imageRoutes.stack) {
-	endpoints.push({
-		route: layer.route.path,
-		help: layer.helpDescription,
-	});
-}
-
 // start the server
 const server = express();
 
@@ -55,17 +46,26 @@ server.use(morgan("combined", { stream: httpLogger.stream }));
 
 // * routes
 // import image API routes
-server.use("/", imageRoutes);
+server.use("/i", imageRoutes);
 
 // import user API routes
-server.use("/", userRoutes);
+server.use("/u", userRoutes);
 
 // fallback
 server.get("/", (req, res) => {
 	res.status(200).json({
 		success: true,
 		version: version,
-		commands: endpoints,
+		commands: [
+			{
+				path: "/u",
+				description: "user routes here",
+			},
+			{
+				path: "/i",
+				description: "image routes here",
+			},
+		],
 	});
 });
 
