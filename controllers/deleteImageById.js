@@ -4,6 +4,9 @@ const debug = require("debug")("imageHost:controllers");
 const queryImageMeta = require("../dbQueries/queryImageMeta");
 require("dotenv").config();
 
+/** Deletes the file specified at the file path.
+ * @param {string} filepath - The path of the file which is being deleted. 
+ */
 const deleteFile = (filepath) => {
 	debug(`Deleting image from the filesystem`);
 
@@ -17,7 +20,11 @@ const deleteFile = (filepath) => {
 	});
 };
 
-// * Delete a single image
+/** The controller which deletes a single image from the UUID
+ * 
+ * @param {*} req - The request passed in from the routes.
+ * @param {*} res - The response returned.
+ */
 const deleteImageById = async (req, res) => {
 	const meta = await queryImageMeta(req.params.id);
 
