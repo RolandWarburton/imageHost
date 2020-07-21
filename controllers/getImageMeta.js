@@ -1,4 +1,3 @@
-const { Image } = require("../models/imageModel");
 const getImageMetaQuery = require("../dbQueries/queryImageMeta");
 const debug = require("debug")("imageHost:controllers");
 require("dotenv").config();

@@ -4,8 +4,6 @@ const debug = require("debug")("imageHost:setup");
 const db = require("./database");
 const mongoose = require("mongoose");
 const chalk = require("chalk");
-const internalIp = require("internal-ip");
-const jwt = require("jsonwebtoken");
 const { Image } = require("./models/imageModel");
 const { User } = require("./models/userModel");
 const sizeOf = require("image-size");
@@ -99,23 +97,15 @@ const setupTests = () => {
 		// Create some test data
 		const users = [];
 		for (let i of Array(5).keys()) {
-			username = "user_" + i;
-			password = "password_" + i;
-			superuser = false;
+			const username = "user_" + i;
+			const password = "password_" + i;
+			const superuser = false;
 			users.push(addUser(username, password, superuser));
 		}
 		await Promise.all(users);
 
 		// create an account admin and sign a key for them to use for post requests
-		const accountMaster = await addUser("AccountMaster", "rhinos", true);
-		const accountMasterToken = jwt.sign(
-			{ _id: accountMaster._id },
-			process.env.USER_KEY
-		);
-
-		// get the ip and port for postImage()
-		const ip = await internalIp.v4();
-		const port = process.env.PORT || 2020;
+		await addUser("AccountMaster", "rhinos", true);
 
 		// get filepaths for different filetypes to post
 		const png = path.resolve(__dirname, "testAssets", "png.png");

@@ -6,8 +6,6 @@ const chalk = require("chalk");
 const version = require("../package").version;
 const fs = require("fs");
 const cookieParser = require("cookie-parser");
-const path = require("path");
-const util = require("util");
 const cors = require("cors");
 // const internalIp = require("internal-ip");
 const morgan = require("morgan");
@@ -32,7 +30,7 @@ createDir("./logs");
 
 // populate endpoints [] with some helpful info
 const endpoints = [];
-for (layer of imageRoutes.stack) {
+for (let layer of imageRoutes.stack) {
 	endpoints.push({
 		route: layer.route.path,
 		help: layer.helpDescription,
@@ -84,7 +82,7 @@ const start = () => {
 			reject(false);
 		}
 	})
-		.then((success) => {
+		.then(() => {
 			debug("connected to the express server!");
 			return true;
 		})
@@ -95,10 +93,11 @@ const start = () => {
 };
 
 /** Stop the server
- * @example const server = require("./server");
+ * @example
+ * const server = require("./server");
  * server.app.stop()
  */
-const stop = (quiet) => {
+const stop = () => {
 	debug("trying to stop the express");
 
 	return new Promise((resolve, reject) => {
@@ -110,16 +109,12 @@ const stop = (quiet) => {
 		if (success) resolve(true);
 		else reject(false);
 	})
-		.then((success) => {
+		.then(() => {
 			debug("stopped the server successfully!");
 		})
 		.catch((err) => {
 			console.log(chalk.red(err));
 		});
-
-	// httpServer.close((err) => {
-	// 	if (err) console.log(chalk.red(err));
-	// });
 };
 
 module.exports = { app: server, startServer: start, stopServer: stop };

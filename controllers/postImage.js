@@ -1,6 +1,5 @@
 const { Image } = require("../models/imageModel");
 const path = require("path");
-const Formidable = require("formidable");
 const Busboy = require("busboy");
 const { v5: uuidv5 } = require("uuid");
 const mime = require("mime-types");
@@ -139,21 +138,18 @@ const postImage = (req, res) => {
 	});
 
 	// * ============================== On Field ==============================
-	busboy.on(
-		"field",
-		(
-			fieldname,
-			val,
-			fieldnameTruncated,
-			valTruncated,
-			encoding,
-			mimetype
-		) => {
-			debug("pushing field");
-			// stick this field onto the image object
-			image[fieldname] = val;
-		}
-	);
+	// ? possible field names:
+	// fieldname,
+	// val,
+	// fieldnameTruncated,
+	// valTruncated,
+	// encoding,
+	// mimetype
+	busboy.on("field", (fieldname, val) => {
+		debug("pushing field");
+		// stick this field onto the image object
+		image[fieldname] = val;
+	});
 
 	// * ============================== On Finish ==============================
 	busboy.on("finish", async () => {
@@ -202,7 +198,9 @@ const postImage = (req, res) => {
 		const url = `${encrypted}://${req.headers.host}/image/${image._id}`;
 
 		image.save().then((document) => {
-			debug("saved image object to database");
+			debug(
+				`saved image object to database ${document._id.substr(0, 4)}...`
+			);
 			return res
 				.status(response.http)
 				.json({ success: response.success, data: image, url: url });

@@ -1,13 +1,10 @@
-const fs = require("fs");
-const path = require("path");
-const dotenv = require("dotenv").config();
 const { User } = require("./models/userModel");
 const debug = require("debug")("imageHost:setup");
-const mongoose = require("mongoose");
 const chalk = require("chalk");
 const queryUser = require("./dbQueries/queryUser");
+require("dotenv").config();
 // get the db
-const { db, connectToDB, disconnectFromDB } = require("./database");
+const { connectToDB, disconnectFromDB } = require("./database");
 
 const setup = async () => {
 	// connect to database 🗃

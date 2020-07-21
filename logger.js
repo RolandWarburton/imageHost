@@ -86,7 +86,7 @@ if (process.env.NODE_ENV !== "production") {
 
 // Route all the httpLogger.stream messages to the httpLogger
 httpLogger.stream = {
-	write: function (message, encoding) {
+	write: function (message) {
 		httpLogger.http(message);
 	},
 };

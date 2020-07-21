@@ -1,4 +1,3 @@
-const { User } = require("../../models/userModel");
 const queryUser = require("../../dbQueries/queryUser");
 const jwt = require("jsonwebtoken");
 const { validateUser } = require("../../validation/validateUser");
@@ -36,11 +35,14 @@ const login = async (req, res) => {
 
 	// sign a token for the user
 	debug("Signing a new token for the user");
-	token = jwt.sign({ _id: user._id }, process.env.USER_KEY);
+	const token = jwt.sign({ _id: user._id }, process.env.USER_KEY);
 
 	// put the token in a http cookie 🍪
 	debug("put auth-token in a res cookie");
 	res.cookie("auth-token", token, { sameSite: true });
+
+	// log the login event
+	logger.log("info", `Login from ${user._id}`);
 
 	// return 200 all good and attach the user and token
 	return res

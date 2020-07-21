@@ -18,9 +18,8 @@ spinner.spinner = {
 /**
  * @example connect("mongodb://user:pass(at)ip:27017/db?authSource=auth")
  * @param {string} url - url to connect to
- * @param {boolean} quiet - print messages or not
  */
-const connectToDB = async (url, quiet) => {
+const connectToDB = async (url) => {
 	const connectionSchema = {
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
@@ -34,7 +33,7 @@ const connectToDB = async (url, quiet) => {
 /** Returns an promise that resolves to true or false after the database has closed
  *
  */
-const disconnectFromDB = async (quiet) => {
+const disconnectFromDB = async () => {
 	return new Promise((resolve, reject) => {
 		db.close((err) => {
 			if (err) reject(err);

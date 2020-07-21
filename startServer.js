@@ -2,10 +2,10 @@ const chalk = require("chalk");
 const express = require("express");
 const path = require("path");
 const internalIp = require("internal-ip");
-require("dotenv");
+require("dotenv").config();
 
 const server = require("./server");
-const { db, connectToDB, disconnectFromDB } = require("./database");
+const { connectToDB } = require("./database");
 
 /** return a messages telling the user where
  * the server is running locally

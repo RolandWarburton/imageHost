@@ -14,7 +14,7 @@ require("dotenv").config();
 // ?sort=Number
 // ?user=String
 
-sortKeys = {
+const sortKeys = {
 	1: { "meta.uploadDate": -1 }, // Upload Date Ascending (newest first)
 	2: { "meta.uploadDate": 1 }, // Upload Date Descending (oldest first)
 	3: { "meta.size": -1 }, // File Size Descending (biggest first)
@@ -40,7 +40,7 @@ const getSkipCount = (page, per_page) => {
 	const pageNumber = Number(page) || 0;
 
 	// Internally controlls how many values to skip to give the illusion of pages
-	skipCount = pageNumber ? numberOfItemsPerPage * pageNumber : 0;
+	const skipCount = pageNumber ? numberOfItemsPerPage * pageNumber : 0;
 
 	debug(
 		`Internally skipping ${skipCount} results to get to page ${pageNumber}`
@@ -119,8 +119,9 @@ const getImages = async (req, res) => {
 		}
 
 		// images.meta.uploadDate = new Date(parseInt(images.meta.uploadDate));
-		for (img of images) {
-			const t = new Date(img.meta.uploadDate).toISOString();
+		for (let img of images) {
+			// get the actual time as a string
+			// const time = new Date(img.meta.uploadDate).toISOString();
 			img.test = new mongoose.Types.ObjectId().getTimestamp();
 		}
 		return res.status(200).json({ success: true, data: images });
@@ -130,5 +131,3 @@ const getImages = async (req, res) => {
 };
 
 module.exports = getImages;
-
-// images[0].test = new mongoose.Types.ObjectId().getTimestamp();
