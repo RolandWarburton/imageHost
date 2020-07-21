@@ -15,7 +15,11 @@ Make sure to include a `.env` file on the root of the project containing.
 
 ```none
 # Connection to your production database
-DB_CONNECTION=mongodb://username:password@127.0.0.1:27017/databaseName
+DB_USERNAME=roland
+DB_PASSWORD=rhinos
+DB_PORT=27017
+DB_DATABASE=imageHost
+DB_AUTHENTICATION_DATABASE=imageHost
 
 # Connection to your testing database. Only needed for testing
 DB_CONNECTION_TESTING=mongodb://username:password@localhost:27017/testing?authSource=testing
@@ -57,11 +61,7 @@ mongodb://username:password@127.0.0.1:27017/databaseName?authSource=authenticati
 
 ### Running in a docker container
 
-Change the @127... to @mongo which is the name of the mongo database container.
-
-```none
-DB_CONNECTION=mongodb://roland:rhinos@mongo:27017/imageHost?authSource=imageHost
-```
+Change the @127... to @mongo which is the name of the mongo database container. This should be done automatically.
 
 ### Running locally
 

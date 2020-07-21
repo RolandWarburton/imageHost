@@ -1,12 +1,12 @@
 const fs = require("fs");
 const path = require("path");
 const debug = require("debug")("imageHost:setup");
-const db = require("./database");
 const mongoose = require("mongoose");
 const chalk = require("chalk");
 const { Image } = require("./models/imageModel");
 const { User } = require("./models/userModel");
 const sizeOf = require("image-size");
+const { connectToDB } = require("./database");
 const { v5: uuidv5 } = require("uuid");
 const FormData = require("form-data");
 require("dotenv").config();
@@ -76,56 +76,62 @@ const addImage = async (filepath, user_id) => {
 	});
 };
 
-const setupTests = () => {
-	// Tell the user if theres an issue with the connection
-	db.on("error", console.error.bind(console, "MongoDB connection error:"));
+const setupTests = async () => {
+	debug("asdasd");
+	await connectToDB(
+		process.env.DB_USERNAME,
+		process.env.DB_PASSWORD,
+		process.env.DB_PORT,
+		"testing",
+		"testing"
+	);
+	debug("finished connecting");
 
 	// once connected try and find the AccountMaster account. If it doesnt exist create it
-	db.once("open", async () => {
-		// delete everything in the test users collection 🔥
-		await User.deleteMany({}, (err, result) => {
-			if (err) debug(err);
-			debug(`Deleting old users... 🔥\n${JSON.stringify(result)}`);
-		});
 
-		// delete everything in the image collection 🔥
-		Image.deleteMany({}, (err, result) => {
-			if (err) debug(err);
-			debug(`Deleting old images... 🔥\n${JSON.stringify(result)}`);
-		});
-
-		// Create some test data
-		const users = [];
-		for (let i of Array(5).keys()) {
-			const username = "user_" + i;
-			const password = "password_" + i;
-			const superuser = false;
-			users.push(addUser(username, password, superuser));
-		}
-		await Promise.all(users);
-
-		// create an account admin and sign a key for them to use for post requests
-		await addUser("AccountMaster", "rhinos", true);
-
-		// get filepaths for different filetypes to post
-		const png = path.resolve(__dirname, "testAssets", "png.png");
-		const webm = path.resolve(__dirname, "testAssets", "webm.webm");
-		const mp4 = path.resolve(__dirname, "testAssets", "mp4.mp4");
-
-		// post images to imageHost.imageHost
-		const images = [
-			addImage(png, await users[0]._id),
-			addImage(webm, await users[1]._id),
-			addImage(mp4, await users[2]._id),
-		];
-
-		// make sure all posts resolve
-		await Promise.all(images);
-
-		console.log(chalk.magenta("STOPPING"));
-
-		mongoose.disconnect();
+	// delete everything in the test users collection 🔥
+	await User.deleteMany({}, (err, result) => {
+		if (err) debug(err);
+		debug(`Deleting old users... 🔥\n${JSON.stringify(result)}`);
 	});
+
+	// delete everything in the image collection 🔥
+	Image.deleteMany({}, (err, result) => {
+		if (err) debug(err);
+		debug(`Deleting old images... 🔥\n${JSON.stringify(result)}`);
+	});
+
+	// Create some test data
+	const users = [];
+	for (let i of Array(5).keys()) {
+		const username = "user_" + i;
+		const password = "password_" + i;
+		const superuser = false;
+		users.push(addUser(username, password, superuser));
+	}
+	await Promise.all(users);
+
+	// create an account admin and sign a key for them to use for post requests
+	await addUser("AccountMaster", "rhinos", true);
+
+	// get filepaths for different filetypes to post
+	const png = path.resolve(__dirname, "testAssets", "png.png");
+	const webm = path.resolve(__dirname, "testAssets", "webm.webm");
+	const mp4 = path.resolve(__dirname, "testAssets", "mp4.mp4");
+
+	// post images to imageHost.imageHost
+	const images = [
+		addImage(png, await users[0]._id),
+		addImage(webm, await users[1]._id),
+		addImage(mp4, await users[2]._id),
+	];
+
+	// make sure all posts resolve
+	await Promise.all(images);
+
+	console.log(chalk.magenta("STOPPING"));
+
+	mongoose.disconnect();
 };
 
 module.exports = setupTests();
