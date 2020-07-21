@@ -21,7 +21,13 @@ const getMessage = async () => {
  * @example go()
  */
 const go = async () => {
-	await connectToDB(process.env.DB_CONNECTION);
+	await connectToDB(
+		process.env.DB_USERNAME,
+		process.env.DB_PASSWORD,
+		process.env.DB_PORT,
+		process.env.DB_DATABASE,
+		process.env.DB_AUTHENTICATION_DATABASE
+	);
 	await server.startServer();
 	console.log(await getMessage());
 

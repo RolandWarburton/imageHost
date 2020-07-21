@@ -8,7 +8,13 @@ const { connectToDB, disconnectFromDB } = require("./database");
 
 const setup = async () => {
 	// connect to database 🗃
-	await connectToDB(process.env.DB_CONNECTION);
+	await connectToDB(
+		process.env.DB_USERNAME,
+		process.env.DB_PASSWORD,
+		process.env.DB_PORT,
+		process.env.DB_DATABASE,
+		process.env.DB_AUTHENTICATION_DATABASE
+	);
 
 	const username = process.env.ACCOUNT_MASTER_USERNAME;
 	const password = process.env.ACCOUNT_MASTER_PASSWORD;

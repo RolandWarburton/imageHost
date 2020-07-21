@@ -3,6 +3,7 @@ const ora = require("ora");
 const chalk = require("chalk");
 const util = require("util");
 const debug = require("debug")("imageHost:database");
+const isDocker = require("is-docker");
 require("dotenv/config");
 
 // the database connection object
@@ -19,11 +20,15 @@ spinner.spinner = {
  * @example connect("mongodb://user:pass(at)ip:27017/db?authSource=auth")
  * @param {string} url - url to connect to
  */
-const connectToDB = async (url) => {
+const connectToDB = async (username, password, port, database, auth) => {
+	const addr = isDocker() ? "mongo" : "localhost";
+	const url = `mongodb://${username}:${password}@${addr}:${port}/${database}?authsource=${auth}`;
+
 	const connectionSchema = {
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
 	};
+
 	spinner.start();
 
 	const con = util.promisify(mongoose.connect);
