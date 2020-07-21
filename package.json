@@ -4,7 +4,7 @@
 	"description": "Self serve image host",
 	"main": "index.js",
 	"scripts": {
-		"start": "node server.js",
+		"start": "node startServer.js",
 		"docker:build": "sudo docker-compose build && sudo docker-compose up ",
 		"docker:start": "sudo docker-compose up",
 		"docker:reset": "sudo docker-compose rm && sudo docker-compose build",
