@@ -77,7 +77,6 @@ const addImage = async (filepath, user_id) => {
 };
 
 const setupTests = async () => {
-	debug("asdasd");
 	await connectToDB(
 		process.env.DB_USERNAME,
 		process.env.DB_PASSWORD,
@@ -85,7 +84,6 @@ const setupTests = async () => {
 		"testing",
 		"testing"
 	);
-	debug("finished connecting");
 
 	// once connected try and find the AccountMaster account. If it doesnt exist create it
 
