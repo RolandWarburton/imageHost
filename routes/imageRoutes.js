@@ -7,7 +7,7 @@ const getImages = require("../controllers/getImages");
 const postImage = require("../controllers/postImage");
 const deleteImageById = require("../controllers/deleteImageById");
 const authenticate = require("../middleware/authenticate");
-const routeHelpers = require("./routeHelpers");
+const buildRouter = require("./buildRouter");
 
 const routes = [
 	{
@@ -112,6 +112,6 @@ const routes = [
 ];
 
 // build the router!
-routeHelpers.buildRouter(router, routes);
+buildRouter(router, routes);
 
 module.exports = router;
