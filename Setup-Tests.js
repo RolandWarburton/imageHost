@@ -85,8 +85,6 @@ const setupTests = async () => {
 		"testing"
 	);
 
-	// once connected try and find the AccountMaster account. If it doesnt exist create it
-
 	// delete everything in the test users collection 🔥
 	await User.deleteMany({}, (err, result) => {
 		if (err) debug(err);
