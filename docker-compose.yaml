@@ -1,11 +1,14 @@
-version: '3.7'
+version: '2.2'
 services:
   app:
     container_name: imageHost-container
     restart: always
-    build: .
-    ports:
-      - '80:2020'
+    environment: 
+        # ! Change this to your domain name
+        VIRTUAL_HOST: DOMAIN.COM
+    expose: .
+    expose:
+      - 80
     links:
       - mongo
     volumes:
@@ -20,7 +23,6 @@ services:
         - MONGO_INITDB_ROOT_PASSWORD=rhinos
     volumes:
         # For the startup script that mongo runs to create a new user
-        # - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
         - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
         # Store the mongo database on the host to make it persistent between container restarts
         - ./mongo-volume:/data/db
