@@ -23,7 +23,7 @@ const routes = [
 		},
 	},
 	{
-		path: "/image/:id",
+		path: "/:id",
 		method: "get",
 		middleware: [],
 		handler: getImageById,
@@ -32,7 +32,7 @@ const routes = [
 				"Returns an actual image (png/jpg/gif...) for an image id",
 			method: "get",
 			parameters: ":id -> ID of an image",
-			example: "/image/124944bc-7ee6-5222-8096-59f56da28bcb",
+			example: "/124944bc-7ee6-5222-8096-59f56da28bcb",
 		},
 	},
 	{
