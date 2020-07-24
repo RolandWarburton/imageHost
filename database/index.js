@@ -22,7 +22,8 @@ spinner.spinner = {
  */
 const connectToDB = async (username, password, port, database, auth) => {
 	const addr = isDocker() ? "mongo" : "localhost";
-	const url = `mongodb://${username}:${password}@${addr}:${port}/${database}?authsource=${auth}`;
+	const userAuth = (username) ? `${username}:${password}@` : "";
+	const url = `mongodb://${addr}${userAuth}:${port}/${database}?authsource=${auth}`;
 
 	const connectionSchema = {
 		useNewUrlParser: true,
