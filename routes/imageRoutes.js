@@ -11,31 +11,6 @@ const buildRouter = require("./buildRouter");
 
 const routes = [
 	{
-		path: "/image/meta/:id",
-		method: "get",
-		middleware: [],
-		handler: getImageMeta,
-		help: {
-			description: "get an images meta in json",
-			method: this.method,
-			parameters: ":id -> ID of an image",
-			example: "/image/meta/124944bc-7ee6-5222-8096-59f56da28bcb",
-		},
-	},
-	{
-		path: "/:id",
-		method: "get",
-		middleware: [],
-		handler: getImageById,
-		help: {
-			description:
-				"Returns an actual image (png/jpg/gif...) for an image id",
-			method: "get",
-			parameters: ":id -> ID of an image",
-			example: "/124944bc-7ee6-5222-8096-59f56da28bcb",
-		},
-	},
-	{
 		path: "/images",
 		method: "get",
 		middleware: [authenticate],
@@ -64,7 +39,7 @@ const routes = [
 		},
 	},
 	{
-		path: "/image",
+		path: "/upload",
 		method: "post",
 		middleware: [authenticate],
 		requiresAuthentication: true,
@@ -96,7 +71,32 @@ const routes = [
 		},
 	},
 	{
-		path: "/image/:id",
+		path: "/meta/:id",
+		method: "get",
+		middleware: [],
+		handler: getImageMeta,
+		help: {
+			description: "get an images meta in json",
+			method: this.method,
+			parameters: ":id -> ID of an image",
+			example: "/image/meta/124944bc-7ee6-5222-8096-59f56da28bcb",
+		},
+	},
+	{
+		path: "/:id",
+		method: "get",
+		middleware: [],
+		handler: getImageById,
+		help: {
+			description:
+				"Returns an actual image (png/jpg/gif...) for an image id",
+			method: "get",
+			parameters: ":id -> ID of an image",
+			example: "/124944bc-7ee6-5222-8096-59f56da28bcb",
+		},
+	},
+	{
+		path: "/:id",
 		method: "delete",
 		middleware: [authenticate],
 		requiresAuthentication: true,
@@ -108,7 +108,7 @@ const routes = [
 			parameters: ":id -> ID of an image",
 			example: "/image/124944bc-7ee6-5222-8096-59f56da28bcb",
 		},
-	},
+	}
 ];
 
 // show the help json when the image route is hit
