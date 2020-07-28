@@ -1,0 +1,84 @@
+version: "2.2"
+services:
+    app:
+        container_name: imagehost
+        image: imagehost
+        restart: always
+        environment:
+            - VIRTUAL_HOST=0x8.host
+            - LETSENCRYPT_HOST=0x8.host
+            - LETSENCRYPT_EMAIL=warburtonroland@gmail.com
+            - VIRTUAL_PORT=3000
+            - VIRTUAL_NETWORK=proxy-network
+        # expose: .
+        # expose:
+        #   - 80
+        ports:
+            - 27017
+        links:
+            - mongo
+        volumes:
+            # map /tmp/logs in the container to logs on host
+            - ./logs:/usr/src/app/logs
+    mongo:
+        container_name: mongo
+        image: mongo
+        environment:
+            - Mongo_INITDB_DATABASE=imageHost
+            - MONGO_INITDB_ROOT_USERNAME=admin
+            - MONGO_INITDB_ROOT_PASSWORD=rhinos
+        volumes:
+            # For the startup script that mongo runs to create a new user
+            - ./app/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+            # Store the mongo database on the host to make it persistent between container restarts
+            - ./mongo-volume:/data/db
+        ports:
+            - "27017:27017"
+        command: mongod --auth --quiet
+
+networks:
+    default:
+        external:
+            name: nginx-proxy
+# version: "3"
+# services:
+#     website2:
+#         container_name: imagehost
+#         # ports:
+#         # - 3000
+#         environment:
+#             - VIRTUAL_HOST=0x8.host
+#             - LETSENCRYPT_HOST=0x8.host
+#             - LETSENCRYPT_EMAIL=warburtonroland@gmail.com
+#             - VIRTUAL_PORT=3000
+#             - VIRTUAL_NETWORK=proxy-network
+#             # - VIRTUAL_PROTO=https
+#         image: imagehost
+#         # image: nginx
+#         # image: httpd:alpine
+
+# networks:
+#     default:
+#         external:
+#             name: nginx-proxy
+#
+# expose vs ports:
+# EXPOSE: expose this port to other docker containers
+# PORTS: this port is accessed by the outside world
+
+# version: '3'
+
+# services:
+#   example-app:
+#     image: example/example-app
+#     expose:
+#       - 80
+#     environment:
+#       VIRTUAL_HOST: app.example.com
+#       LETSENCRYPT_HOST: app.example.com
+#       LETSENCRYPT_EMAIL: foo@example.com
+
+# networks:
+#     default:
+#         external:
+#             name: nginx-proxy
