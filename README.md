@@ -43,6 +43,9 @@ PORT=2020
 # Where is your project located
 ROOT=/home/meMyself/imageHost
 
+#Domain name
+DOMAIN=0x8.host
+
 # Allow fallback to a req.header.auth-token. Otherwise a cookie from /login is required
 # Change to true if you are using clients like sharex to post images from
 ALLOW_HEADER_TOKEN=true

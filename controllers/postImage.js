@@ -13,7 +13,7 @@ require("dotenv").config();
 const imageFiletypes = ["gif", "ico", "bmp", "jpeg", "png", "svg"];
 const mediaFiletypes = ["mp4", "webm"];
 
-/** Constructs a file path based on the specified UUID 
+/** Constructs a file path based on the specified UUID
  * and mimetype.
  * @param {*} mimetype - The extension type of the file.
  * @param {*} uuid - The file's unique ID.
@@ -205,7 +205,7 @@ const postImage = (req, res) => {
 		image.user_id = res.user._id;
 
 		const encrypted = req.secure ? "https" : "http";
-		const url = `${encrypted}://${req.headers.host}/image/${image._id}`;
+		const url = `${encrypted}://${req.headers.host}/i/${image._id}`;
 
 		image.save().then((document) => {
 			debug(

@@ -69,12 +69,12 @@ server.get("/", (req, res) => {
 	});
 });
 
-server.use((req, res, next) => {
-	res.status(404).json({
-		success: false,
-		error: "Request not found."
-	});
-});
+// server.use((req, res, next) => {
+// 	res.status(404).json({
+// 		success: false,
+// 		error: "Request not found."
+// 	});
+// });
 
 // ===================== CONTROLLING THE SERVER =====================
 
