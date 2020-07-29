@@ -10,21 +10,20 @@ services:
             - LETSENCRYPT_EMAIL=warburtonroland@gmail.com
             - VIRTUAL_PORT=3000
             - VIRTUAL_NETWORK=proxy-network
-        # expose: .
-        # expose:
-        #   - 80
         ports:
+            # expose mongo port to the world (for debugging reasons)
             - 27017
         links:
             - mongo
         volumes:
             # map /tmp/logs in the container to logs on host
-            - ./logs:/usr/src/app/logs
+            - ./app/logs:/usr/src/app/logs
     mongo:
         container_name: mongo
         image: mongo
         environment:
-            - Mongo_INITDB_DATABASE=imageHost
+            # back up admin user in case something goes wrong
+            - MONGO_INITDB_DATABASE=imageHost
             - MONGO_INITDB_ROOT_USERNAME=admin
             - MONGO_INITDB_ROOT_PASSWORD=rhinos
         volumes:
@@ -40,45 +39,3 @@ networks:
     default:
         external:
             name: nginx-proxy
-# version: "3"
-# services:
-#     website2:
-#         container_name: imagehost
-#         # ports:
-#         # - 3000
-#         environment:
-#             - VIRTUAL_HOST=0x8.host
-#             - LETSENCRYPT_HOST=0x8.host
-#             - LETSENCRYPT_EMAIL=warburtonroland@gmail.com
-#             - VIRTUAL_PORT=3000
-#             - VIRTUAL_NETWORK=proxy-network
-#             # - VIRTUAL_PROTO=https
-#         image: imagehost
-#         # image: nginx
-#         # image: httpd:alpine
-
-# networks:
-#     default:
-#         external:
-#             name: nginx-proxy
-#
-# expose vs ports:
-# EXPOSE: expose this port to other docker containers
-# PORTS: this port is accessed by the outside world
-
-# version: '3'
-
-# services:
-#   example-app:
-#     image: example/example-app
-#     expose:
-#       - 80
-#     environment:
-#       VIRTUAL_HOST: app.example.com
-#       LETSENCRYPT_HOST: app.example.com
-#       LETSENCRYPT_EMAIL: foo@example.com
-
-# networks:
-#     default:
-#         external:
-#             name: nginx-proxy
