@@ -1,9 +1,7 @@
 const chalk = require("chalk");
 const express = require("express");
 const path = require("path");
-const internalIp = require("internal-ip");
-const queryUser = require("./dbQueries/queryUser");
-const { User } = require("./models/userModel");
+const fs = require("fs");
 const debug = require("debug")("imageHost:server");
 
 require("dotenv").config();
@@ -16,28 +14,22 @@ const { connectToDB } = require("./database");
  * @example console.log(await getMessage());
  */
 const getMessage = async () => {
-	const ip = await internalIp.v4();
 	const port = process.env.PORT;
 	return chalk.green(
 		`Server is running http://${process.env.DOMAIN}:${port}`
 	);
 };
 
-const addUser = async (username, password, superuser = false) => {
-	const newUser = new User({
-		username: username,
-		password: password,
-		superuser: superuser,
-	});
-
-	return newUser
-		.save()
-		.then((user) => {
-			console.log(chalk.green.bold(`Created new user: ${user.username}`));
-			return user;
-		})
-		.catch((err) => {
-			console.red.bold(err);
+const createDir = (path) => {
+	debug(`Creating directory ${path}`);
+	if (!fs.existsSync(path))
+		fs.mkdir(path, (err) => {
+			if (err) {
+				console.error(err);
+				return;
+			} else {
+				console.log(`Build directory: ${path}`);
+			}
 		});
 };
 
@@ -46,6 +38,9 @@ const addUser = async (username, password, superuser = false) => {
  */
 const go = async () => {
 	debug("Connecting to db");
+
+	createDir("./uploads");
+	createDir("./logs");
 
 	await require("./Setup.js");
 	await connectToDB(
@@ -59,11 +54,6 @@ const go = async () => {
 	await server.startServer();
 	debug("started server");
 	console.log(await getMessage());
-
-	// if (!(await queryUser("username", "AccountMaster"))) {
-	// 	debug("NO MASTER USER. Creating Account Master");
-	// 	await addUser("AccountMaster", "rhinos", true);
-	// }
 
 	console.log(process.env.ROOT);
 	server.app.use(

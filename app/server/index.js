@@ -4,29 +4,12 @@ const userRoutes = require("../routes/userRoutes");
 const debug = require("debug")("imageHost:server");
 const chalk = require("chalk");
 const version = require("../package").version;
-const fs = require("fs");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 // const internalIp = require("internal-ip");
 const morgan = require("morgan");
 // const { logger } = require("./logger");
 const { httpLogger } = require("../logger");
-
-const createDir = (path) => {
-	debug(`Creating directory ${path}`);
-	if (!fs.existsSync(path))
-		fs.mkdir(path, (err) => {
-			if (err) {
-				console.error(err);
-				return;
-			} else {
-				console.log(`Build directory: ${path}`);
-			}
-		});
-};
-
-createDir("./uploads");
-createDir("./logs");
 
 // start the server
 const server = express();
