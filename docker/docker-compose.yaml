@@ -31,7 +31,7 @@ services:
             # For the startup script that mongo runs to create a new user
             - ./app/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
             # Store the mongo database on the host to make it persistent between container restarts
-            - ./mongo-volume:/data/db
+            - ./app/mongo-volume:/data/db
         ports:
             - "27017:27017"
         command: mongod --auth --quiet
