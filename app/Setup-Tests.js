@@ -86,16 +86,14 @@ const setupTests = async () => {
 	);
 
 	// delete everything in the test users collection 🔥
-	await User.deleteMany({}, (err, result) => {
-		if (err) debug(err);
-		debug(`Deleting old users... 🔥\n${JSON.stringify(result)}`);
-	});
+	await User.deleteMany({})
+		.then((result) => debug(`Deleting old users... 🔥\n${JSON.stringify(result)}`))
+		.catch((err) => debug(err));
 
 	// delete everything in the image collection 🔥
-	Image.deleteMany({}, (err, result) => {
-		if (err) debug(err);
-		debug(`Deleting old images... 🔥\n${JSON.stringify(result)}`);
-	});
+	await Image.deleteMany({})
+		.then((result) => debug(`Deleting old images... 🔥\n${JSON.stringify(result)}`))
+		.catch((err) => debug(err));
 
 	// Create some test data
 	const users = [];

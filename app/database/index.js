@@ -1,10 +1,12 @@
 const mongoose = require("mongoose");
 const ora = require("ora");
 const chalk = require("chalk");
-const util = require("util");
 const debug = require("debug")("imageHost:database");
 const isDocker = require("is-docker");
 require("dotenv/config");
+
+// keep Mongoose 6's strict query filtering explicit (silences the Mongoose 7 deprecation warning)
+mongoose.set("strictQuery", true);
 
 // the database connection object
 const db = mongoose.connection;
@@ -25,15 +27,9 @@ const connectToDB = async (username, password, port, database, auth) => {
 	const userAuth = username ? `${username}:${password}@` : "";
 	const url = `mongodb://${userAuth}${addr}:${port}/${database}?authsource=${auth}`;
 
-	const connectionSchema = {
-		useNewUrlParser: true,
-		useUnifiedTopology: true,
-	};
-
 	spinner.start();
 
-	const con = util.promisify(mongoose.connect);
-	return con(url, connectionSchema);
+	return mongoose.connect(url);
 };
 
 /** Returns an promise that resolves to true or false after the database has closed

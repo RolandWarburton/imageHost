@@ -10,22 +10,21 @@ require("dotenv").config();
  * @param {string} queryField - The key to lookup. Eg. "username"
  * @param {string} queryValue - The value to loopup. Eg. "roland"
  */
-const queryUser = (queryField, queryValue) => {
+const queryUser = async (queryField, queryValue) => {
 	debug("Running queryUser from db queries...");
 	debug(`Looking for user where ${queryField} = ${queryValue}`);
-	return User.findOne({ [queryField]: queryValue }, (err, user) => {
-		if (err) {
-			debug(`An error occurred when looking for a user`);
-		}
-
+	try {
+		const user = await User.findOne({ [queryField]: queryValue }).exec();
 		if (!user) {
 			debug(`didnt find a user ${queryValue}`);
-			return undefined;
+			return null;
 		}
-
 		debug(`Found user ${user.username}`);
 		return user;
-	});
+	} catch (err) {
+		debug(`An error occurred when looking for a user`);
+		return null;
+	}
 };
 
 module.exports = queryUser;
