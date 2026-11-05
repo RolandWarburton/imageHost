@@ -3,9 +3,8 @@ const path = require("path");
 const Busboy = require("busboy");
 const { v5: uuidv5 } = require("uuid");
 const mime = require("mime-types");
-const sizeOf = require("image-size");
+const { imageSizeFromFile } = require("image-size/fromFile");
 const fs = require("fs");
-const util = require("util");
 const debug = require("debug")("imageHost:controllers");
 
 require("dotenv").config();
@@ -38,8 +37,6 @@ const getFilepathDetails = (mimetype, uuid) => {
 		saveFilepath: saveFilepath,
 	};
 };
-
-const getdim = util.promisify(sizeOf);
 
 /** The controller which posts an image.
  * @param {*} req - The request passed in from the routes.
@@ -182,7 +179,7 @@ const postImage = (req, res) => {
 		if (imageFiletypes.includes(extension)) {
 			// its a static image. get dims using the conventional way
 			try {
-				const dim = await getdim(image.path);
+				const dim = await imageSizeFromFile(image.path);
 				image.meta.dimensions = {
 					width: dim.width,
 					height: dim.height,

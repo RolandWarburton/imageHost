@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const chalk = require("chalk");
 const { Image } = require("./models/imageModel");
 const { User } = require("./models/userModel");
-const sizeOf = require("image-size");
+const { imageSize } = require("image-size");
 const { connectToDB } = require("./database");
 const { v5: uuidv5 } = require("uuid");
 const FormData = require("form-data");
@@ -61,7 +61,7 @@ const addImage = async (filepath, user_id) => {
 	image.meta.uploadYear = new Date().getUTCFullYear();
 
 	try {
-		const dimensions = sizeOf(image.path);
+		const dimensions = imageSize(fs.readFileSync(image.path));
 		image.meta.dimensions = {
 			width: dimensions.width,
 			height: dimensions.height,
