@@ -32,45 +32,33 @@ const sortKeys = {
 	6: { "meta.dimensions.pixels": 1 },
 };
 
+/** Sanitizes the per_page query to return the number of items available per page.
+ * Valid values are 1 to 20; anything else falls back to the maximum of 20.
+ * @param {number} per_page - The number of items available per page
+ * @returns The number of items available per page
+ */
+const getPerPage = (per_page) => {
+	per_page = Math.floor(Number(per_page));
+	return per_page >= 1 && per_page <= 20 ? per_page : 20;
+};
+
 /** Return the number of items that need to be skipped
- * to get to page number
+ * to get to page number. Pages are 0-indexed (?page=0 is the first page).
  * @param {number} page - The queries.page value (?page=N)
- * @param {number} per_page - The queries.per_page value (?per_page=N)
+ * @param {number} per_page - The sanitized number of items per page (from getPerPage)
  * @returns The number of images to be skipped.
  */
 const getSkipCount = (page, per_page) => {
-	// get the per_page query and convert it to a number to set the numberOfItemsPerPage
-	per_page = Number(per_page);
-
-	// Set the number of items per page to the ?per_page=n if its between 10 and 100
-	const numberOfItemsPerPage =
-		per_page && per_page >= 1 && per_page <= 100 ? per_page : 100;
-
-	//get the page number and convert it to a number
-	const pageNumber = Number(page) || 0;
+	const pageNumber = Math.max(0, Math.floor(Number(page)) || 0);
 
 	// Internally controlls how many values to skip to give the illusion of pages
-	const skipCount = pageNumber ? numberOfItemsPerPage * pageNumber : 0;
+	const skipCount = per_page * pageNumber;
 
 	debug(
 		`Internally skipping ${skipCount} results to get to page ${pageNumber}`
 	);
 
 	return skipCount;
-};
-
-/** Sanitizes the per_page query to return the number of items available per page,
- * or the maximum number of items which can be returned on a page (Capped at 20)
- * @param {number} per_page - The number of items available per page
- * @returns The number of items available per page
- */
-const getPerPage = (per_page) => {
-	per_page = Number(per_page);
-	if (per_page <= 20) {
-		return per_page;
-	} else {
-		return 20;
-	}
 };
 
 /** The controller which returns all images.
@@ -101,13 +89,13 @@ const getImages = async (req, res) => {
 		filters.user_id = queries.user || undefined;
 	}
 
-	// Internally controlls how many values to skip to give the illusion of pages
-	const skipCount = getSkipCount(queries.page, queries.per_page);
-
 	// ================= Queries ================================
 	// ?per_page
 	// how many items per page
 	const per_page = getPerPage(queries.per_page);
+
+	// Internally controlls how many values to skip to give the illusion of pages
+	const skipCount = getSkipCount(queries.page, per_page);
 
 	// ?tags
 	// return just images with this tag. may be an array if theres multiple images

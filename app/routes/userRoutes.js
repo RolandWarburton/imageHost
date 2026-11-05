@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const createUser = require("../controllers/userControllers/createUser");
 const login = require("../controllers/userControllers/login");
+const logout = require("../controllers/userControllers/logout");
 const authenticate = require("../middleware/authenticate");
 const buildRouter = require("./buildRouter");
 const bodyParser = require("body-parser");
@@ -48,7 +49,7 @@ const routes = [
 		path: "/logout",
 		method: "post",
 		middleware: [urlencodedParser],
-		handler: createUser,
+		handler: logout,
 		help: {
 			description:
 				"Log a user out. Clears their token from the session cookies",
